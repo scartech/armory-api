@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const db = require('../config/database');
 const { Sequelize, DataTypes } = require('sequelize');
+const db = require('../config/db.config');
 
 const User = db.define(
   'User',
@@ -72,9 +72,5 @@ User.hashPassword = async (password) => {
   const saltRounds = 8;
   return bcrypt.hash(password, saltRounds);
 };
-
-User.sync({ alter: true }).then(() => {
-  console.log('Users table created/modified');
-});
 
 module.exports = User;
