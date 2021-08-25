@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { Sequelize, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const db = require('../config/db.config');
 
 const User = db.define(

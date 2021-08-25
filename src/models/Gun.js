@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const db = require('../config/db.config');
 
 const Gun = db.define(
@@ -14,8 +14,6 @@ const Gun = db.define(
     },
     serialNumber: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
     },
     modelName: {
       type: DataTypes.STRING,
@@ -48,12 +46,20 @@ const Gun = db.define(
       type: DataTypes.DECIMAL,
     },
     saleDate: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DATEONLY,
+    },
+    picture: {
+      type: DataTypes.BLOB,
     },
   },
   {
     underscored: true,
     tableName: 'guns',
+    defaultScope: {
+      attributes: {
+        exclude: ['userId'],
+      },
+    },
   },
 );
 

@@ -4,21 +4,15 @@ const UsersController = require('../../controllers/users.controller');
 
 const router = express.Router();
 
-// Get single user
-router.get('/:id', UsersController.user);
-
-// Delete a user
+router.get('/:id', UsersController.read);
 router.delete('/:id', UsersController.delete);
+router.put('/:id', UsersController.update);
 
-// Update a user password
 router.put(
   '/:id/password',
   [check('password', 'Password is required.').not().isEmpty().trim()],
   UsersController.updatePassword,
 );
-
-// Update a user
-router.put('/:id', UsersController.update);
 
 // Create new user
 router.post(

@@ -1,9 +1,5 @@
-const bcrypt = require('bcrypt');
-const passport = require('passport');
 const User = require('../models/User');
-const Sequelize = require('sequelize');
 const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
 
 class UsersController {
   static async create(req, res, next) {
@@ -50,7 +46,7 @@ class UsersController {
     }
   }
 
-  static async user(req, res, next) {
+  static async read(req, res, next) {
     const { id } = req.params;
 
     try {
@@ -146,9 +142,9 @@ class UsersController {
 
   static async users(req, res, next) {
     try {
-      console.log(req.user);
-
-      User.findAll()
+      User.findAll({
+        include: ['guns'],
+      })
         .then((users) => res.status(200).json(users))
         .catch((error) => res.status(500).send(error.message));
     } catch (error) {

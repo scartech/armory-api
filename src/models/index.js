@@ -1,12 +1,18 @@
-const Gun = require('./Gun');
-const User = require('./User');
+Gun = require('./Gun');
+User = require('./User');
 
 // Create model associations
-User.hasMany(Gun, { as: 'guns' });
-Gun.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user',
+User.hasMany(Gun, {
+  as: 'guns',
+  foreignKey: {
+    name: 'userId',
+  },
 });
 
-db = {};
-module.exports = db;
+Gun.belongsTo(User, {
+  foreignKey: {
+    name: 'userId',
+  },
+});
+
+module.exports = {};

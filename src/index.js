@@ -1,9 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const router = require('./routes');
-const db = require('./config/db.config');
 
-// Create the Sequelize relationships
+const db = require('./config/db.config');
 require('./models');
 
 require('dotenv').config();
