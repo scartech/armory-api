@@ -23,7 +23,7 @@ class UsersController {
 
       if (user) {
         return res
-          .status(400)
+          .status(409)
           .send('A user already exists with this email address.');
       }
 
@@ -64,7 +64,7 @@ class UsersController {
     try {
       const user = await User.findByPk(id);
       if (!user) {
-        return res.status(400).send('User does not exist.');
+        return res.status(404).send('User does not exist.');
       }
 
       User.destroy({
@@ -80,16 +80,24 @@ class UsersController {
   }
 
   static async updatePassword(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      let message = '';
+      errors.errors.map((error) => {
+        message += error.msg + ' ';
+      });
+      return res.status(400).send(message);
+    }
+
     const { id } = req.params;
 
     try {
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(parseInt(id));
       if (!user) {
-        return res.status(400).send('User does not exist.');
+        return res.status(404).send('User does not exist.');
       }
 
       const { password } = req.body;
-
       const hashedPassword = await User.hashPassword(password);
 
       User.update(
@@ -115,7 +123,7 @@ class UsersController {
     try {
       const user = await User.findByPk(id);
       if (!user) {
-        return res.status(400).send('User does not exist.');
+        return res.status(404).send('User does not exist.');
       }
 
       const { email, name, admin, enabled } = req.body;

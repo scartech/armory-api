@@ -1,16 +1,8 @@
-const express = require('express');
 const passport = require('passport');
-const router = require('./routes');
 
+const app = require('./server');
 const db = require('./config/db.config');
 require('./models');
-
-require('dotenv').config();
-
-const app = express();
-app.use(express.json());
-
-const PORT = process.env.PORT || 5000;
 
 // Authentication middlewares
 require('./config/auth.config');
@@ -26,10 +18,6 @@ db.sync({ alter: true }).then(() => {
   console.log('Tables created/modified');
 });
 
-// Add all routes
-app.use(router);
-
-// Default homepage route
-app.get('/', (req, res) => res.send('Armory API'));
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
