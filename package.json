@@ -11,11 +11,12 @@
     "start": "node src/index",
     "dev": "nodemon src/index",
     "lint": "eslint src/",
-    "test": "NODE_ENV=test jest --coverage",
+    "test": "NODE_ENV=test jest",
+    "test-coverage": "NODE_ENV=test jest --coverage",
     "test-w": "NODE_ENV=test jest --watchAll"
   },
   "author": "Tim Scarborough <scarborough.tim@gmail.com>",
-  "license": "MIT",
+  "license": "Unlicense",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "config": "^3.3.6",

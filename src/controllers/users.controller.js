@@ -2,149 +2,95 @@ const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
 class UsersController {
-  static async create(req, res, next) {
+  static async exists(email) {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        let message = '';
-        errors.errors.map((error) => {
-          message += error.msg + ' ';
-        });
-        return res.status(400).send(message);
-      }
-
-      const { email, name, password, admin, enabled } = req.body;
-      const user = await User.findOne({
+      const count = await User.count({
         where: {
           email,
         },
       });
 
-      if (user) {
-        return res
-          .status(409)
-          .send('A user already exists with this email address.');
+      return count > 0;
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  static async create(values) {
+    try {
+      const { email, name, password, admin, enabled } = values;
+      const exists = UsersController.exists(email);
+
+      if (exists > 0) {
+        throw new Error('A user already exists with this email address.');
       }
 
       const hashedPassword = await User.hashPassword(password);
-      User.create({
+      return await User.create({
         email,
         name,
         password: hashedPassword,
         admin,
         enabled,
-      })
-        .then((user) => {
-          User.findByPk(user.id)
-            .then((user) => res.status(200).json(user))
-            .catch((error) => res.status(500).send(error.message));
-        })
-        .catch((error) => res.status(500).send(error.message));
+      });
     } catch (error) {
       return next(error);
     }
   }
 
-  static async read(req, res, next) {
-    const { id } = req.params;
-
+  static async read(id) {
     try {
-      User.findByPk(id)
-        .then((user) => res.status(200).json(user))
-        .catch((error) => res.status(500).send(error.message));
+      return await User.findByPk(id);
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
-  static async delete(req, res, next) {
-    const { id } = req.params;
-
+  static async delete(id) {
     try {
-      const user = await User.findByPk(id);
-      if (!user) {
-        return res.status(404).send('User does not exist.');
-      }
-
-      User.destroy({
+      return await User.destroy({
         where: {
           id,
         },
-      })
-        .then(() => res.status(200).send())
-        .catch((error) => res.status(500).send(error.message));
+      });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
-  static async updatePassword(req, res, next) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      let message = '';
-      errors.errors.map((error) => {
-        message += error.msg + ' ';
-      });
-      return res.status(400).send(message);
-    }
-
-    const { id } = req.params;
-
+  static async updatePassword(id, password) {
     try {
       const user = await User.findByPk(parseInt(id));
       if (!user) {
-        return res.status(404).send('User does not exist.');
+        throw new Error('User does not exist.');
       }
 
-      const { password } = req.body;
       const hashedPassword = await User.hashPassword(password);
+      user.password = hashedPassword;
 
-      User.update(
-        {
-          password: hashedPassword,
-        },
-        {
-          where: {
-            id: parseInt(id),
-          },
-        },
-      )
-        .then(() => res.status(200).send())
-        .catch((error) => res.status(500).send(error.message));
+      return await user.save({ fields: ['password'] });
     } catch (error) {
       return next(error);
     }
   }
 
-  static async update(req, res, next) {
-    const { id } = req.params;
-
+  static async update(id, values) {
     try {
-      const user = await User.findByPk(id);
+      const { email, name, admin, enabled } = values;
+      const user = await UsersController.read(id);
+
       if (!user) {
-        return res.status(404).send('User does not exist.');
+        throw new Error('User not found.');
       }
 
-      const { email, name, admin, enabled } = req.body;
+      user.email = email;
+      user.name = name;
+      user.admin = admin;
+      user.enabled = enabled;
 
-      User.update(
-        {
-          email,
-          name,
-          admin,
-          enabled,
-        },
-        {
-          where: {
-            id: parseInt(id),
-          },
-        },
-      )
-        .then(() => res.status(200).send())
-        .catch((error) => res.status(500).send(error.message));
+      return await user.save({ fields: ['email', 'name', 'admin', 'enabled'] });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
