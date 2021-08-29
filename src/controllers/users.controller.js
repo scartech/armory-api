@@ -12,7 +12,7 @@ class UsersController {
 
       return count > 0;
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
@@ -34,7 +34,7 @@ class UsersController {
         enabled,
       });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
@@ -48,11 +48,12 @@ class UsersController {
 
   static async delete(id) {
     try {
-      return await User.destroy({
-        where: {
-          id,
-        },
-      });
+      const user = await User.findByPk(id);
+      if (!user) {
+        throw new Error('User not found.');
+      }
+
+      return await user.destroy();
     } catch (error) {
       throw error;
     }
@@ -70,7 +71,7 @@ class UsersController {
 
       return await user.save({ fields: ['password'] });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
@@ -94,15 +95,13 @@ class UsersController {
     }
   }
 
-  static async users(req, res, next) {
+  static async users() {
     try {
-      User.findAll({
+      return await User.findAll({
         include: ['guns'],
-      })
-        .then((users) => res.status(200).json(users))
-        .catch((error) => res.status(500).send(error.message));
+      });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 }

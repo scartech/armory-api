@@ -159,7 +159,7 @@ router.post(
       if (user) {
         res.status(200).json(user);
       } else {
-        res.status(500).json(new ClientMessage(true, ['Update failed']));
+        res.status(500).json(new ClientMessage(true, ['Create failed']));
       }
     } catch (error) {
       res.status(500).json(new ClientMessage(true, [error.message]));
@@ -168,6 +168,13 @@ router.post(
 );
 
 // All users
-router.get('/', UsersController.users);
+router.get('/', async (req, res) => {
+  try {
+    const users = await UsersController.users();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json(new ClientMessage(true, [error.message]));
+  }
+});
 
 module.exports = router;

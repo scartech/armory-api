@@ -3,18 +3,8 @@ const Gun = require('../models/Gun');
 const User = require('../models/User');
 
 class GunsController {
-  static async create(req, res, next) {
+  static async create(userId, values) {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        let message = '';
-        errors.errors.map((error) => {
-          message += error.msg + ' ';
-        });
-        return res.status(400).send(message);
-      }
-
       const {
         serialNumber,
         name,
@@ -29,68 +19,42 @@ class GunsController {
         buyer,
         salePrice,
         saleDate,
-      } = req.body;
+      } = values;
 
-      const gun = await Gun.findOne({
-        where: {
-          serialNumber,
-        },
+      return await Gun.create({
+        serialNumber,
+        name,
+        modelName,
+        manufacturer,
+        caliber,
+        type,
+        action,
+        dealer,
+        purchasePrice,
+        purchaseDate,
+        buyer,
+        salePrice,
+        saleDate,
+        userId: userId,
       });
-
-      if (gun) {
-        return res
-          .status(400)
-          .send('A gun already exists with this serial number.');
-      }
-
-      const user = await User.findByPk(req.user.id);
-
-      Gun.create({
-        serialNumber,
-        name,
-        modelName,
-        manufacturer,
-        caliber,
-        type,
-        action,
-        dealer,
-        purchasePrice,
-        purchaseDate,
-        buyer,
-        salePrice,
-        saleDate,
-        userId: user.id,
-      })
-        .then((gun) => {
-          Gun.findByPk(gun.id)
-            .then((gun) => res.status(200).json(gun))
-            .catch((error) => res.status(500).send(error.message));
-        })
-        .catch((error) => res.status(500).send(error.message));
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
-  static async read(req, res, next) {
-    const { id } = req.params;
-
+  static async read(id) {
     try {
-      Gun.findByPk(id)
-        .then((gun) => res.status(200).json(gun))
-        .catch((error) => res.status(500).send(error.message));
+      return await Gun.findByPk(id);
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
-  static async update(req, res, next) {
-    const { id } = req.params;
-
+  static async update(id, values) {
     try {
       const gun = await Gun.findByPk(id);
       if (!gun) {
-        return res.status(400).send('Gun does not exist.');
+        throw new Error('Gun not found.');
       }
 
       const {
@@ -107,55 +71,38 @@ class GunsController {
         buyer,
         salePrice,
         saleDate,
-      } = req.body;
+      } = values;
 
-      Gun.update(
-        {
-          serialNumber,
-          name,
-          modelName,
-          manufacturer,
-          caliber,
-          type,
-          action,
-          dealer,
-          purchasePrice,
-          purchaseDate,
-          buyer,
-          salePrice,
-          saleDate,
-        },
-        {
-          where: {
-            id: parseInt(id),
-          },
-        },
-      )
-        .then(() => res.status(200).send())
-        .catch((error) => res.status(500).send(error.message));
+      return await gun.update({
+        serialNumber,
+        name,
+        modelName,
+        manufacturer,
+        caliber,
+        type,
+        action,
+        dealer,
+        purchasePrice,
+        purchaseDate,
+        buyer,
+        salePrice,
+        saleDate,
+      });
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 
-  static async delete(req, res, next) {
-    const { id } = req.params;
-
+  static async delete(id) {
     try {
       const gun = await Gun.findByPk(id);
       if (!gun) {
-        return res.status(400).send('Gun does not exist.');
+        throw new Error('Gun not found.');
       }
 
-      Gun.destroy({
-        where: {
-          id,
-        },
-      })
-        .then(() => res.status(200).send())
-        .catch((error) => res.status(500).send(error.message));
+      return await gun.destroy();
     } catch (error) {
-      return next(error);
+      throw error;
     }
   }
 }

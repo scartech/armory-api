@@ -177,7 +177,7 @@ describe('PUT /api/users:id', () => {
     const updateUser = { email, name, enabled, admin };
 
     await request(app)
-      .put('/api/users/' + user.id)
+      .put(`/api/users/${user.id}`)
       .send(updateUser)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)

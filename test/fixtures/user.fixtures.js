@@ -4,7 +4,7 @@ const JWT_SECRET = require('../../src/config/jwt.config').JWT_SECRET;
 
 exports.createUser = async (name, email, password, admin, enabled) => {
   const hashedPassword = await User.hashPassword(password);
-  return User.create({
+  return await User.create({
     email,
     name,
     password: hashedPassword,
@@ -15,7 +15,7 @@ exports.createUser = async (name, email, password, admin, enabled) => {
 
 exports.createJWT = () => {
   const body = {
-    id: faker.random.alphaNumeric(1),
+    id: 3,
     email: faker.internet.email(),
     name: faker.name.findName(),
   };
