@@ -194,12 +194,24 @@ describe('PUT /api/guns:id', () => {
       saleDate: faker.date.past(),
     };
 
-    await request(app)
+    const res = await request(app)
       .put(`/api/guns/${gun.id}`)
       .send(values)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(200);
+
+    expect(res.body.serialNumber).toBe(values.serialNumber);
+    expect(res.body.name).toBe(values.name);
+    expect(res.body.modelName).toBe(values.modelName);
+    expect(res.body.manufacturer).toBe(values.manufacturer);
+    expect(res.body.caliber).toBe(values.caliber);
+    expect(res.body.type).toBe(values.type);
+    expect(res.body.action).toBe(values.action);
+    expect(res.body.dealer).toBe(values.dealer);
+    expect(res.body.purchasePrice).toBe(values.purchasePrice);
+    expect(res.body.buyer).toBe(values.buyer);
+    expect(res.body.salePrice).toBe(values.salePrice);
   });
 });
 

@@ -176,12 +176,17 @@ describe('PUT /api/users:id', () => {
     const admin = !user.admin;
     const updateUser = { email, name, enabled, admin };
 
-    await request(app)
+    const res = await request(app)
       .put(`/api/users/${user.id}`)
       .send(updateUser)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(200);
+
+    expect(res.body.email).toEqual(email);
+    expect(res.body.name).toEqual(name);
+    expect(res.body.enabled).toEqual(enabled);
+    expect(res.body.admin).toEqual(admin);
   });
 });
 
