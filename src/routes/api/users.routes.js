@@ -167,7 +167,28 @@ router.post(
   },
 );
 
-// All users
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Users
+ *     produces:
+ *       - application/json
+ *     description: Get all users
+ *     responses:
+ *       200:
+ *         description: All users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *
+ */
 router.get('/', async (req, res) => {
   try {
     const users = await UsersController.users();

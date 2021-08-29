@@ -242,6 +242,6 @@ describe('POST /api/guns:id', () => {
       .send(values)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
-      .expect(200, done);
+      .expect(201, done);
   });
 });

@@ -4,6 +4,18 @@ const router = express.Router();
 const GunsController = require('../../controllers/guns.controller');
 const ClientMessage = require('../../util/ClientMessage');
 
+/**
+ * GET /api/guns/{id}
+ * @tags Guns
+ * @summary Gets a single gun by ID
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @return {Gun} 200 - success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -23,6 +35,18 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/guns/{id}
+ * @tags Guns
+ * @summary Deletes a gun by ID
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @return 200 - success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -47,6 +71,19 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/guns/{id}
+ * @tags Guns
+ * @summary Updates a gun
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @param {Gun} request.body.required - Gun info
+ * @return {Gun} 200 - success - The updated gun
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -102,6 +139,18 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/guns
+ * @tags Guns
+ * @summary Creates a new gun
+ * @security BearerAuth
+ * @param {Gun} request.body.required - Gun info
+ * @return {Gun} 201 - created - The created gun
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.post('/', async (req, res) => {
   const {
     serialNumber,
@@ -137,12 +186,11 @@ router.post('/', async (req, res) => {
     });
 
     if (gun) {
-      res.status(200).json(gun);
+      res.status(201).json(gun);
     } else {
       res.status(500).json(new ClientMessage(true, ['Create failed']));
     }
   } catch (error) {
-    console.log(error.message);
     res.status(500).json(new ClientMessage(true, [error.message]));
   }
 });
