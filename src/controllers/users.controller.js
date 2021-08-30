@@ -40,7 +40,7 @@ class UsersController {
 
   static async read(id) {
     try {
-      return await User.findByPk(id);
+      return await User.findByPk(id, { include: ['guns'] });
     } catch (error) {
       throw error;
     }
@@ -61,7 +61,7 @@ class UsersController {
 
   static async updatePassword(id, password) {
     try {
-      const user = await User.findByPk(parseInt(id));
+      const user = await UsersController.read(id);
       if (!user) {
         throw new Error('User does not exist.');
       }

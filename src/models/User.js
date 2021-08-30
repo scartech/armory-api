@@ -5,12 +5,13 @@ const db = require('../config/db.config');
 /**
  * User model
  * @typedef {object} User
- * @property {integer} id - ID
- * @property {string} email - User's email address
- * @property {string} name - User's full name
- * @property {boolean} admin - Is the user an admin?
- * @property {boolean} enabled - Is the user account enabled?
- * @property {string} password - User's password - password
+ * @property {integer} id.required - ID
+ * @property {string} email.required - User's email address
+ * @property {string} name.required - User's full name
+ * @property {boolean} admin.required - Is the user an admin?
+ * @property {boolean} enabled.required - Is the user account enabled?
+ * @property {string} password.required - Password - password
+ * @property {array<Gun>} guns - The user's guns
  */
 const User = db.define(
   'User',

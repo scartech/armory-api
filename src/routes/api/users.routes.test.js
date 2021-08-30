@@ -245,7 +245,7 @@ describe('POST /api/users:id', () => {
       .send(user)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
-      .expect(200, done);
+      .expect(201, done);
   });
 
   it('should return 400 with no email', (done) => {

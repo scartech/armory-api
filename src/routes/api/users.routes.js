@@ -5,6 +5,29 @@ const UsersController = require('../../controllers/users.controller');
 
 const router = express.Router();
 
+/**
+ * GET /api/users/{id}
+ * @tags Users
+ * @summary Gets a single user by ID
+ * @security BearerAuth
+ * @param {integer} id.path - User ID
+ * @return {array<object>} 200 - success
+ * @example response - 200 - User
+ * {
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true,
+ *   "updatedAt": "2021-08-29T22:29:46.740Z",
+ *   "createdAt": "2021-08-29T22:29:46.740Z",
+ *   "guns": []
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The user was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -24,6 +47,18 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/users/{id}
+ * @tags Users
+ * @summary Deletes a user by ID
+ * @security BearerAuth
+ * @param {integer} id.path - User ID
+ * @return 200 - Success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The user was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -48,6 +83,38 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/users/{id}
+ * @tags Users
+ * @summary Creates a new user
+ * @security BearerAuth
+ * @param {integer} id.path - User ID
+ * @param {object} request.body.required - User data
+ * @example request - Existing User
+ * {
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true
+ * }
+ * @return {object} 200 - Updated an existing user
+ * @example response - 200 - Updated User
+ * {
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true,
+ *   "updatedAt": "2021-08-29T22:29:46.740Z",
+ *   "createdAt": "2021-08-29T22:29:46.740Z",
+ *   "guns": []
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 400 - Missing or invalid parameters
+ * @return {ClientMessage} 404 - The user was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -80,6 +147,23 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/users/{id}/password
+ * @tags Users
+ * @summary Updates a user's password
+ * @security BearerAuth
+ * @param {integer} id.path - User ID
+ * @param {object} request.body.required - Password data
+ * @example request - Password Payload
+ * {
+ *   "password": "secretpassword"
+ * }
+ * @return 200 - Success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The user was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.put(
   '/:id/password',
   [check('password', 'Password is required.').not().isEmpty().trim()],
@@ -115,7 +199,37 @@ router.put(
   },
 );
 
-// Create new user
+/**
+ * POST /api/users
+ * @tags Users
+ * @summary Creates a new user
+ * @security BearerAuth
+ * @param {object} request.body.required - User info
+ * @example request - Valid New User
+ * {
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true,
+ *   "password": "secretpassword"
+ * }
+ * @return {object} 201 - Create a new user
+ * @example response - 201 - Created User
+ * {
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true,
+ *   "updatedAt": "2021-08-29T22:29:46.740Z",
+ *   "createdAt": "2021-08-29T22:29:46.740Z",
+ *   "guns": []
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Missing or invalid parameters
+ * @return {ClientMessage} 409 - A user already exists with the supplied email address
+ * @return {ClientMessage} 500 - A server error occurred
+ */
 router.post(
   '/',
   [
@@ -157,7 +271,7 @@ router.post(
       });
 
       if (user) {
-        res.status(200).json(user);
+        res.status(201).json(user);
       } else {
         res.status(500).json(new ClientMessage(true, ['Create failed']));
       }
@@ -168,26 +282,24 @@ router.post(
 );
 
 /**
- * @swagger
- * /api/users:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     tags:
- *       - Users
- *     produces:
- *       - application/json
- *     description: Get all users
- *     responses:
- *       200:
- *         description: All users.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- *
+ * GET /api/users
+ * @tags Users
+ * @summary Gets all users
+ * @security BearerAuth
+ * @return {array<object>} 200 - Array of users
+ * @example response - 200 - Users
+ * [{
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "admin": false,
+ *   "enabled": true,
+ *   "updatedAt": "2021-08-29T22:29:46.740Z",
+ *   "createdAt": "2021-08-29T22:29:46.740Z",
+ *   "guns": []
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
  */
 router.get('/', async (req, res) => {
   try {

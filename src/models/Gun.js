@@ -4,7 +4,7 @@ const db = require('../config/db.config');
 /**
  * Gun model
  * @typedef {object} Gun
- * @property {integer} id - ID
+ * @property {integer} id.required - ID
  * @property {string} name - A user defined name
  * @property {string} serialNumber - Serial number
  * @property {string} modelName - The manufacturer's model name
@@ -19,7 +19,7 @@ const db = require('../config/db.config');
  * @property {number} salePrice - How much was the gun sold for - float
  * @property {string} saleDate - When was the gun sold - date
  * @property {string} picture - A picture of the fun - byte
- * @property {integer} userId - ID of the owner
+ * @property {integer} userId.required - ID of the user that owns the gun
  */
 const Gun = db.define(
   'Gun',

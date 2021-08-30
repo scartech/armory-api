@@ -7,6 +7,7 @@ const swaggerUI = require('swagger-ui-express');
 const router = require('./routes');
 
 const app = express();
+app.disable('x-powered-by');
 app.use(express.json());
 
 // Add all routes
@@ -42,6 +43,11 @@ const swaggerOptions = {
   swaggerUIPath: '/docs',
   baseDir: __dirname,
   filesPattern: './**/*.js',
+  swaggerUiOptions: {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  },
 };
 
 expressJSDocSwagger(app)(swaggerOptions);
