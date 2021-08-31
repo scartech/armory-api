@@ -1,5 +1,14 @@
 {
-  "env": { "node": true },
-  "parserOptions": { "ecmaVersion": 2017 },
-  "extends": ["plugin:prettier"]
+  "env": {
+    "node": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
 }

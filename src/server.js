@@ -21,8 +21,8 @@ app.get('/', (req, res) =>
 const swaggerOptions = {
   info: {
     version: '1.0.0',
-    title: 'Express API for Armory',
-    description: 'API used to support the Armory frontend.',
+    title: 'Armory API',
+    description: '2A inventory management.',
     license: {
       name: 'Unlicense',
       url: 'https://unlicense.org',
