@@ -1,7 +1,7 @@
 const passport = require('passport');
 
 const app = require('./server');
-const db = require('./config/db.config');
+const { DBConfig } = require('./config');
 require('./models');
 
 // Authentication middlewares
@@ -9,12 +9,12 @@ require('./config/auth.config');
 app.use(passport.initialize());
 
 // DB connection
-db.authenticate()
+DBConfig.authenticate()
   .then(() => console.log('Successfully connected to the DB'))
   .catch((e) => console.error('Unable to connect to the DB', e));
 
 // Create missing tables and columns
-db.sync({ alter: true }).then(() => {
+DBConfig.sync({ alter: true }).then(() => {
   console.log('Tables created/modified');
 });
 

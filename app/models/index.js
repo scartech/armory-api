@@ -15,4 +15,7 @@ Gun.belongsTo(User, {
   },
 });
 
-module.exports = {};
+module.exports = {
+  Gun,
+  User,
+};

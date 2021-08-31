@@ -1,8 +1,15 @@
-const { validationResult } = require('express-validator');
-const Gun = require('../models/Gun');
-const User = require('../models/User');
+const { Gun } = require('../models');
 
-class GunsController {
+/**
+ *
+ */
+class GunService {
+  /**
+   *
+   * @param {*} userId
+   * @param {*} values
+   * @returns
+   */
   static async create(userId, values) {
     try {
       const {
@@ -42,6 +49,11 @@ class GunsController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @returns
+   */
   static async read(id) {
     try {
       return await Gun.findByPk(id);
@@ -50,6 +62,12 @@ class GunsController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @param {*} values
+   * @returns
+   */
   static async update(id, values) {
     try {
       const gun = await Gun.findByPk(id);
@@ -93,6 +111,11 @@ class GunsController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @returns
+   */
   static async delete(id) {
     try {
       const gun = await Gun.findByPk(id);
@@ -107,4 +130,4 @@ class GunsController {
   }
 }
 
-module.exports = GunsController;
+module.exports = GunService;

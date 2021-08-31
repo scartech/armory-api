@@ -2,10 +2,9 @@ const faker = require('faker');
 const passport = require('passport');
 const request = require('supertest');
 const app = require('../../server');
-const UserFixture = require('../../../test/fixtures/user.fixtures');
-const GunFixture = require('../../../test/fixtures/gun.fixtures');
+const { UserFixtures, GunFixtures } = require('../../test');
 
-const db = require('../../config/db.config');
+const { DBConfig } = require('../../config');
 require('../../models');
 
 const NUM_USERS = 10;
@@ -18,17 +17,17 @@ require('../../config/auth.config');
 app.use(passport.initialize());
 
 beforeAll((done) => {
-  db.authenticate()
+  DBConfig.authenticate()
     .then(() => {
       // For tests, tear down the entire DB and rebuild
-      db.sync({ force: true })
+      DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixture.createJWT();
+          jwtToken = UserFixtures.createJWT();
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
               promises.push(
-                UserFixture.createUser(
+                UserFixtures.createUser(
                   faker.name.findName(),
                   faker.internet.email(),
                   faker.internet.password(),
@@ -44,7 +43,7 @@ beforeAll((done) => {
                 users = userData.map((x) => x.dataValues);
 
                 users.map((user) => {
-                  gunPromises.push(GunFixture.createGun(user.id));
+                  gunPromises.push(GunFixtures.createGun(user.id));
                 });
 
                 Promise.all(gunPromises).then((gunData) => {
@@ -73,7 +72,7 @@ beforeAll((done) => {
 });
 
 afterAll((done) => {
-  db.close().then(done).catch(done);
+  DBConfig.close().then(done).catch(done);
 });
 
 describe('GET /api/guns:id', () => {

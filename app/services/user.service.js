@@ -1,7 +1,14 @@
-const User = require('../models/User');
-const { validationResult } = require('express-validator');
+const { User } = require('../models');
 
-class UsersController {
+/**
+ *
+ */
+class UserService {
+  /**
+   *
+   * @param {*} email
+   * @returns
+   */
   static async exists(email) {
     try {
       const count = await User.count({
@@ -16,10 +23,15 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @param {*} values
+   * @returns
+   */
   static async create(values) {
     try {
       const { email, name, password, admin, enabled } = values;
-      const exists = UsersController.exists(email);
+      const exists = UserService.exists(email);
 
       if (exists > 0) {
         throw new Error('A user already exists with this email address.');
@@ -38,6 +50,11 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @returns
+   */
   static async read(id) {
     try {
       return await User.findByPk(id, { include: ['guns'] });
@@ -46,6 +63,11 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @returns
+   */
   static async delete(id) {
     try {
       const user = await User.findByPk(id);
@@ -59,9 +81,15 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @param {*} password
+   * @returns
+   */
   static async updatePassword(id, password) {
     try {
-      const user = await UsersController.read(id);
+      const user = await UserService.read(id);
       if (!user) {
         throw new Error('User does not exist.');
       }
@@ -75,10 +103,16 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @param {*} id
+   * @param {*} values
+   * @returns
+   */
   static async update(id, values) {
     try {
       const { email, name, admin, enabled } = values;
-      const user = await UsersController.read(id);
+      const user = await UserService.read(id);
 
       if (!user) {
         throw new Error('User not found.');
@@ -95,6 +129,10 @@ class UsersController {
     }
   }
 
+  /**
+   *
+   * @returns
+   */
   static async users() {
     try {
       return await User.findAll({
@@ -106,4 +144,4 @@ class UsersController {
   }
 }
 
-module.exports = UsersController;
+module.exports = UserService;

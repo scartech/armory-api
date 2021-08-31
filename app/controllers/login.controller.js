@@ -1,7 +1,7 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = require('../config/jwt.config').JWT_SECRET;
+const { JWT_SECRET } = require('../config/');
 
 class LoginController {
   static async login(req, res, next) {
