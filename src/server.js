@@ -1,5 +1,8 @@
 const express = require('express');
+const morgan = require('morgan');
 require('dotenv-flow').config();
+
+const { accessLogger } = require('./config');
 
 const expressJSDocSwagger = require('express-jsdoc-swagger');
 const swaggerUI = require('swagger-ui-express');
@@ -9,6 +12,16 @@ const router = require('./routes');
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json());
+
+// Add logging middleware
+app.use(
+  morgan(
+    ':remote-addr - :method :url :status :res[content-length] ":user-agent"',
+    {
+      stream: accessLogger.stream,
+    },
+  ),
+);
 
 // Add all routes
 app.use(router);

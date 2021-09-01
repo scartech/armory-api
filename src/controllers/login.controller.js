@@ -1,5 +1,6 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const { logger } = require('../config');
 
 const { JWT_SECRET } = require('../config/');
 
@@ -21,7 +22,7 @@ class LoginController {
             name: user.name,
           };
 
-          console.log(`${user.email} successfully logged in.`);
+          logger.info(`${user.email} successfully logged in.`);
 
           const token = jwt.sign({ user: body }, JWT_SECRET);
           return res.json({ token });

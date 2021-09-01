@@ -185,7 +185,6 @@ class UserController {
         res.status(500).json(new ClientMessage(true, ['Create failed']));
       }
     } catch (error) {
-      console.log(error.message);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
