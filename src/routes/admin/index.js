@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const gunRoutes = require('./gun.routes');
+const userRoutes = require('./user.routes');
 
-router.use('/guns', gunRoutes);
+router.use('/users', userRoutes);
 
 module.exports = router;

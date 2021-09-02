@@ -8,8 +8,8 @@
     "url": "https://github.com/scartech/armory-api.git"
   },
   "scripts": {
-    "start": "node src/index",
-    "dev": "nodemon src/index",
+    "start": "NODE_ENV=production node src/index",
+    "dev": "NODE_ENV=development nodemon src/index",
     "lint": "eslint src/",
     "test": "NODE_ENV=test jest --runInBand",
     "test-coverage": "NODE_ENV=test jest --runInBand --coverage",

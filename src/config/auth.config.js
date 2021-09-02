@@ -7,7 +7,9 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const JWT_SECRET = require('./jwt.config').JWT_SECRET;
 const User = require('../models/User');
 
-// Handle user login
+/**
+ * Handles user login.
+ */
 passport.use(
   'login',
   new LocalStrategy(
@@ -41,7 +43,9 @@ passport.use(
   ),
 );
 
-// Verify user token is valid
+/**
+ * Verifies that the JWT token is valid.
+ */
 passport.use(
   new JwtStrategy(
     {

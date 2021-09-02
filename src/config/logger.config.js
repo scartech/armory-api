@@ -53,7 +53,7 @@ const accessLogger = new createLogger({
   exitOnError: false,
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'development') {
   logger.add(
     new transports.Console({
       level: 'debug',

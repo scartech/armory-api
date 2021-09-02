@@ -84,12 +84,12 @@ class UserController {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
       }
 
-      const { email, name, admin, enabled } = req.body;
+      const { email, name, role, enabled } = req.body;
 
       const updatedUser = await UserService.update(id, {
         email,
         name,
-        admin,
+        role,
         enabled,
       });
 
@@ -147,7 +147,7 @@ class UserController {
    * @returns
    */
   static async create(req, res) {
-    const { name, email, password, admin, enabled } = req.body;
+    const { name, email, password, role, enabled } = req.body;
 
     try {
       const errors = validationResult(req);
@@ -175,7 +175,7 @@ class UserController {
         name,
         email,
         password,
-        admin,
+        role,
         enabled,
       });
 

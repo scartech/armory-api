@@ -1,13 +1,14 @@
 const { Gun } = require('../models');
 
 /**
- *
+ * Service class for Gun CRUD ops.
  */
 class GunService {
   /**
+   * Creates a new gun for a given user.
    *
-   * @param {*} userId
-   * @param {*} values
+   * @param {integer} userId
+   * @param {object} values
    * @returns
    */
   static async create(userId, values) {
@@ -50,8 +51,9 @@ class GunService {
   }
 
   /**
+   * Reads a single Gun from the DB
    *
-   * @param {*} id
+   * @param {integer} id
    * @returns
    */
   static async read(id) {
@@ -63,9 +65,10 @@ class GunService {
   }
 
   /**
+   * Updates a Gun
    *
-   * @param {*} id
-   * @param {*} values
+   * @param {integer} id
+   * @param {object} values
    * @returns
    */
   static async update(id, values) {
@@ -112,8 +115,9 @@ class GunService {
   }
 
   /**
+   * Deletes a Gun in the DB
    *
-   * @param {*} id
+   * @param {integer} id
    * @returns
    */
   static async delete(id) {

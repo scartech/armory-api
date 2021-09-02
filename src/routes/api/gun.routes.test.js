@@ -22,7 +22,7 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createJWT();
+          jwtToken = UserFixtures.createUserJWT();
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
@@ -31,7 +31,7 @@ beforeAll((done) => {
                   faker.name.findName(),
                   faker.internet.email(),
                   faker.internet.password(),
-                  false,
+                  'USER',
                   true,
                 ),
               );

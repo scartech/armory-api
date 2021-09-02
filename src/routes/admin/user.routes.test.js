@@ -9,6 +9,7 @@ require('../../models');
 
 const NUM_USERS = 10;
 let jwtToken;
+let jwtUserToken;
 let users = [];
 
 // Authentication middlewares
@@ -22,6 +23,7 @@ beforeAll((done) => {
       DBConfig.sync({ force: true })
         .then(() => {
           jwtToken = UserFixtures.createJWT();
+          jwtUserToken = UserFixtures.createUserJWT();
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
@@ -30,7 +32,7 @@ beforeAll((done) => {
                   faker.name.findName(),
                   faker.internet.email(),
                   faker.internet.password(),
-                  false,
+                  'ADMIN',
                   true,
                 ),
               );
@@ -60,14 +62,21 @@ afterAll((done) => {
   DBConfig.close().then(done).catch(done);
 });
 
-describe('GET /api/users', () => {
+describe('GET /admin/users', () => {
   it('should require authentication', (done) => {
-    request(app).get('/api/users').expect(401, done);
+    request(app).get('/admin/users').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .get('/admin/users')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should respond with json array of users', async () => {
     const res = await request(app)
-      .get('/api/users')
+      .get('/admin/users')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -78,14 +87,21 @@ describe('GET /api/users', () => {
   });
 });
 
-describe('GET /api/users:id', () => {
+describe('GET /admin/users:id', () => {
   it('should require authentication', (done) => {
-    request(app).get('/api/users/1').expect(401, done);
+    request(app).get('/admin/users/1').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .get('/admin/users/1')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should return 404 on non-existent user', (done) => {
     request(app)
-      .get('/api/users/888888')
+      .get('/admin/users/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(404, done);
@@ -93,7 +109,7 @@ describe('GET /api/users:id', () => {
 
   it('should return 400 on invalid ID type', (done) => {
     request(app)
-      .get('/api/users/abc')
+      .get('/admin/users/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(400, done);
@@ -103,7 +119,7 @@ describe('GET /api/users:id', () => {
     const user = users[0];
 
     const res = await request(app)
-      .get(`/api/users/${user.id}`)
+      .get(`/admin/users/${user.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -113,21 +129,28 @@ describe('GET /api/users:id', () => {
   });
 });
 
-describe('DELETE /api/users:id', () => {
+describe('DELETE /admin/users:id', () => {
   it('should require authentication', (done) => {
-    request(app).delete('/api/users/1').expect(401, done);
+    request(app).delete('/admin/users/1').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .delete('/admin/users/1')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should return 404 for non-existent user', (done) => {
     request(app)
-      .delete('/api/users/999999')
+      .delete('/admin/users/999999')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(404, done);
   });
 
   it('should return 400 on invalid ID type', (done) => {
     request(app)
-      .delete('/api/users/abc')
+      .delete('/admin/users/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(400, done);
@@ -135,7 +158,7 @@ describe('DELETE /api/users:id', () => {
 
   it('should delete user', (done) => {
     request(app)
-      .delete(`/api/users/${users[0].id}`)
+      .delete(`/admin/users/${users[0].id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(200)
       .end(() => {
@@ -145,9 +168,16 @@ describe('DELETE /api/users:id', () => {
   });
 });
 
-describe('PUT /api/users:id', () => {
+describe('PUT /admin/users:id', () => {
   it('should require authentication', (done) => {
-    request(app).put('/api/users/1').expect(401, done);
+    request(app).put('/admin/users/1').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .put('/admin/users/1')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should return 404 for non-existent user', (done) => {
@@ -156,11 +186,11 @@ describe('PUT /api/users:id', () => {
     const email = faker.internet.email();
     const name = faker.name.findName();
     const enabled = !user.enabled;
-    const admin = !user.admin;
-    const updateUser = { email, name, enabled, admin };
+    const role = 'USER';
+    const updateUser = { email, name, enabled, role };
 
     request(app)
-      .put(`/api/users/99999`)
+      .put(`/admin/users/99999`)
       .send(updateUser)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -173,11 +203,11 @@ describe('PUT /api/users:id', () => {
     const email = faker.internet.email();
     const name = faker.name.findName();
     const enabled = !user.enabled;
-    const admin = !user.admin;
-    const updateUser = { email, name, enabled, admin };
+    const role = 'USER';
+    const updateUser = { email, name, enabled, role };
 
     const res = await request(app)
-      .put(`/api/users/${user.id}`)
+      .put(`/admin/users/${user.id}`)
       .send(updateUser)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -186,20 +216,27 @@ describe('PUT /api/users:id', () => {
     expect(res.body.email).toEqual(email);
     expect(res.body.name).toEqual(name);
     expect(res.body.enabled).toEqual(enabled);
-    expect(res.body.admin).toEqual(admin);
+    expect(res.body.role).toEqual(role);
   });
 });
 
-describe('PUT /api/users:id/password', () => {
+describe('PUT /admin/users:id/password', () => {
   it('should require authentication', (done) => {
-    request(app).put('/api/users/1/password').expect(401, done);
+    request(app).put('/admin/users/1/password').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .put('/admin/users/1/password')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should return 404 for non-existent user', (done) => {
     const password = faker.internet.password();
 
     request(app)
-      .put(`/api/users/99999/password`)
+      .put(`/admin/users/99999/password`)
       .send({ password })
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -210,7 +247,7 @@ describe('PUT /api/users:id/password', () => {
     const user = users[0];
 
     request(app)
-      .put(`/api/users/${user.id}/password`)
+      .put(`/admin/users/${user.id}/password`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(400, done);
   });
@@ -220,28 +257,35 @@ describe('PUT /api/users:id/password', () => {
     const password = faker.internet.password();
 
     request(app)
-      .put(`/api/users/${user.id}/password`)
+      .put(`/admin/users/${user.id}/password`)
       .send({ password })
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(200, done);
   });
 });
 
-describe('POST /api/users:id', () => {
+describe('POST /admin/users:id', () => {
   it('should require authentication', (done) => {
-    request(app).post('/api/users').expect(401, done);
+    request(app).post('/admin/users').expect(401, done);
+  });
+
+  it('should require admin role', (done) => {
+    request(app)
+      .post('/admin/users')
+      .set('Authorization', `Bearer ${jwtUserToken}`)
+      .expect(403, done);
   });
 
   it('should create user', (done) => {
     const email = faker.internet.email();
     const name = faker.name.findName();
     const enabled = true;
-    const admin = false;
+    const role = 'USER';
     const password = faker.internet.password();
-    const user = { email, name, enabled, admin, password };
+    const user = { email, name, enabled, role, password };
 
     request(app)
-      .post('/api/users/')
+      .post('/admin/users/')
       .send(user)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -251,12 +295,12 @@ describe('POST /api/users:id', () => {
   it('should return 400 with no email', (done) => {
     const name = faker.name.findName();
     const enabled = true;
-    const admin = false;
+    const role = 'USER';
     const password = faker.internet.password();
-    const user = { name, enabled, admin, password };
+    const user = { name, enabled, role, password };
 
     request(app)
-      .post('/api/users/')
+      .post('/admin/users/')
       .send(user)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -267,11 +311,11 @@ describe('POST /api/users:id', () => {
     const name = faker.name.findName();
     const email = faker.internet.email();
     const enabled = true;
-    const admin = false;
-    const user = { email, name, enabled, admin };
+    const role = 'USER';
+    const user = { email, name, enabled, role };
 
     request(app)
-      .post('/api/users/')
+      .post('/admin/users/')
       .send(user)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
@@ -282,12 +326,12 @@ describe('POST /api/users:id', () => {
     const email = users[0].email;
     const name = faker.name.findName();
     const enabled = true;
-    const admin = false;
+    const role = 'USER';
     const password = faker.internet.password();
-    const user = { email, name, enabled, admin, password };
+    const user = { email, name, enabled, role, password };
 
     request(app)
-      .post('/api/users/')
+      .post('/admin/users/')
       .send(user)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)

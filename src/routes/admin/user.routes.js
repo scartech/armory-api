@@ -5,7 +5,7 @@ const { UserController } = require('../../controllers');
 const router = express.Router();
 
 /**
- * GET /api/users/{id}
+ * GET /admin/users/{id}
  * @tags Users
  * @summary Gets a single user by ID
  * @security BearerAuth
@@ -16,7 +16,7 @@ const router = express.Router();
  *   "id": 3,
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true,
  *   "updatedAt": "2021-08-29T22:29:46.740Z",
  *   "createdAt": "2021-08-29T22:29:46.740Z",
@@ -30,7 +30,7 @@ const router = express.Router();
 router.get('/:id', UserController.read);
 
 /**
- * DELETE /api/users/{id}
+ * DELETE /admin/users/{id}
  * @tags Users
  * @summary Deletes a user by ID
  * @security BearerAuth
@@ -44,7 +44,7 @@ router.get('/:id', UserController.read);
 router.delete('/:id', UserController.delete);
 
 /**
- * PUT /api/users/{id}
+ * PUT /admin/users/{id}
  * @tags Users
  * @summary Creates a new user
  * @security BearerAuth
@@ -54,7 +54,7 @@ router.delete('/:id', UserController.delete);
  * {
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true
  * }
  * @return {object} 200 - Updated an existing user
@@ -63,7 +63,7 @@ router.delete('/:id', UserController.delete);
  *   "id": 3,
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true,
  *   "updatedAt": "2021-08-29T22:29:46.740Z",
  *   "createdAt": "2021-08-29T22:29:46.740Z",
@@ -78,7 +78,7 @@ router.delete('/:id', UserController.delete);
 router.put('/:id', UserController.update);
 
 /**
- * PUT /api/users/{id}/password
+ * PUT /admin/users/{id}/password
  * @tags Users
  * @summary Updates a user's password
  * @security BearerAuth
@@ -101,7 +101,7 @@ router.put(
 );
 
 /**
- * POST /api/users
+ * POST /admin/users
  * @tags Users
  * @summary Creates a new user
  * @security BearerAuth
@@ -110,7 +110,7 @@ router.put(
  * {
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true,
  *   "password": "secretpassword"
  * }
@@ -120,7 +120,7 @@ router.put(
  *   "id": 3,
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true,
  *   "updatedAt": "2021-08-29T22:29:46.740Z",
  *   "createdAt": "2021-08-29T22:29:46.740Z",
@@ -142,7 +142,7 @@ router.post(
 );
 
 /**
- * GET /api/users
+ * GET /admin/users
  * @tags Users
  * @summary Gets all users
  * @security BearerAuth
@@ -152,7 +152,7 @@ router.post(
  *   "id": 3,
  *   "email": "test@noreply.com",
  *   "name": "John Doe",
- *   "admin": false,
+ *   "role": "USER",
  *   "enabled": true,
  *   "updatedAt": "2021-08-29T22:29:46.740Z",
  *   "createdAt": "2021-08-29T22:29:46.740Z",

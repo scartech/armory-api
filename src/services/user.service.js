@@ -1,12 +1,13 @@
 const { User } = require('../models');
 
 /**
- *
+ * Service class for User CRUD ops
  */
 class UserService {
   /**
+   * Checks if a user exists with a given email address.
    *
-   * @param {*} email
+   * @param {string} email
    * @returns
    */
   static async exists(email) {
@@ -24,13 +25,14 @@ class UserService {
   }
 
   /**
+   * Creates a new user.
    *
-   * @param {*} values
+   * @param {object} values
    * @returns
    */
   static async create(values) {
     try {
-      const { email, name, password, admin, enabled } = values;
+      const { email, name, password, role, enabled } = values;
       const exists = UserService.exists(email);
 
       if (exists > 0) {
@@ -42,7 +44,7 @@ class UserService {
         email,
         name,
         password: hashedPassword,
-        admin,
+        role,
         enabled,
       });
     } catch (error) {
@@ -51,8 +53,9 @@ class UserService {
   }
 
   /**
+   * Reads a single user from the DB.
    *
-   * @param {*} id
+   * @param {integer} id
    * @returns
    */
   static async read(id) {
@@ -64,8 +67,9 @@ class UserService {
   }
 
   /**
+   * Deletes a user from the DB.
    *
-   * @param {*} id
+   * @param {integer} id
    * @returns
    */
   static async delete(id) {
@@ -82,9 +86,10 @@ class UserService {
   }
 
   /**
+   * Updates the password for a given user.
    *
-   * @param {*} id
-   * @param {*} password
+   * @param {integer} id
+   * @param {string} password
    * @returns
    */
   static async updatePassword(id, password) {
@@ -111,7 +116,7 @@ class UserService {
    */
   static async update(id, values) {
     try {
-      const { email, name, admin, enabled } = values;
+      const { email, name, role, enabled } = values;
       const user = await UserService.read(id);
 
       if (!user) {
@@ -120,16 +125,17 @@ class UserService {
 
       user.email = email;
       user.name = name;
-      user.admin = admin;
+      user.role = role;
       user.enabled = enabled;
 
-      return await user.save({ fields: ['email', 'name', 'admin', 'enabled'] });
+      return await user.save({ fields: ['email', 'name', 'role', 'enabled'] });
     } catch (error) {
       throw error;
     }
   }
 
   /**
+   * Reads all users from the DB.
    *
    * @returns
    */
