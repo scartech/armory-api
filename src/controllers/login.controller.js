@@ -41,7 +41,9 @@ class LoginController {
 
           logger.info(`${user.email} successfully logged in.`);
 
-          const token = jwt.sign({ user: body }, JWT_SECRET);
+          const token = jwt.sign({ user: body }, JWT_SECRET, {
+            expiresIn: '2h',
+          });
           return res.json({ token });
         });
       })(req, res, next);

@@ -52,7 +52,6 @@ passport.use(
       secretOrKey: `${JWT_SECRET}`,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       algorithms: ['HS256'],
-      // issuer: 'amory.scarborough.tech',
       jsonWebTokenOptions: {
         maxAge: '2h',
         clockTolerance: 120,
