@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 require('dotenv-flow').config();
 
 const { accessLogger } = require('./config');
@@ -12,6 +13,12 @@ const router = require('./routes');
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+  }),
+);
 
 // Add logging middleware
 app.use(
