@@ -2,8 +2,12 @@ const { validationResult } = require('express-validator');
 const { GunService } = require('../services/');
 const ClientMessage = require('../utils/ClientMessage');
 
+/**
+ * Handles HTTP requests for the Guns model.
+ */
 class GunController {
   /**
+   * Creates a new gun.
    *
    * @param {*} req
    * @param {*} res
@@ -53,6 +57,7 @@ class GunController {
   }
 
   /**
+   * Reads a gun by ID.
    *
    * @param {*} req
    * @param {*} res
@@ -80,6 +85,7 @@ class GunController {
   }
 
   /**
+   * Updates a gun by ID.
    *
    * @param {*} req
    * @param {*} res
@@ -143,6 +149,7 @@ class GunController {
   }
 
   /**
+   * Deletes a gun by ID.
    *
    * @param {*} req
    * @param {*} res
@@ -168,6 +175,26 @@ class GunController {
         res.status(200).send();
       } else {
         res.status(500).json(new ClientMessage(true, ['Delete failed']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
+   * Gets all guns for the logged in user.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async guns(req, res) {
+    try {
+      const guns = await GunService.guns(req.user.id);
+      if (guns) {
+        res.status(200).json(guns);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
       }
     } catch (error) {
       res.status(500).json(new ClientMessage(true, [error.message]));

@@ -1,4 +1,5 @@
 const { Gun } = require('../models');
+const UserService = require('./user.service');
 
 /**
  * Service class for Gun CRUD ops.
@@ -59,6 +60,25 @@ class GunService {
   static async read(id) {
     try {
       return await Gun.findByPk(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Reads all guns for a single user from the DB.
+   *
+   * @param {*} userId
+   * @returns
+   */
+  static async guns(userId) {
+    try {
+      const user = await UserService.read(userId);
+      if (!user) {
+        return;
+      }
+
+      return user.guns;
     } catch (error) {
       throw error;
     }

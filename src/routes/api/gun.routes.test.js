@@ -9,6 +9,7 @@ require('../../models');
 
 const NUM_USERS = 10;
 let jwtToken;
+let invalidUserJwtToken;
 let users = [];
 let guns = [];
 
@@ -23,6 +24,8 @@ beforeAll((done) => {
       DBConfig.sync({ force: true })
         .then(() => {
           jwtToken = UserFixtures.createUserJWT();
+          invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
+
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
@@ -73,6 +76,61 @@ beforeAll((done) => {
 
 afterAll((done) => {
   DBConfig.close().then(done).catch(done);
+});
+
+describe('GET /api/guns', () => {
+  it('should require authentication', (done) => {
+    request(app).get('/api/guns').expect(401, done);
+  });
+
+  it('should return 404 on non-existent user', (done) => {
+    request(app)
+      .get('/api/guns')
+      .set('Authorization', `Bearer ${invalidUserJwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+  });
+
+  it('should return 400 on invalid ID type', (done) => {
+    request(app)
+      .get('/api/guns/abc')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(400, done);
+  });
+
+  it('should respond with empty array for a user with no guns', async () => {
+    const user = await UserFixtures.createUser(
+      faker.name.findName(),
+      faker.internet.email(),
+      faker.internet.password(),
+      'USER',
+      true,
+    );
+    const jwt = UserFixtures.createJWTForUser(user);
+
+    const res = await request(app)
+      .get(`/api/guns`)
+      .set('Authorization', `Bearer ${jwt}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  it('should respond with guns', async () => {
+    const res = await request(app)
+      .get(`/api/guns`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(1);
+  });
 });
 
 describe('GET /api/guns:id', () => {

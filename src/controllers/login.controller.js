@@ -7,7 +7,18 @@ const { validationResult } = require('express-validator');
 const { JWT_SECRET } = require('../config/');
 const { ClientMessage } = require('../utils');
 
+/**
+ * Handles HTTP login requests.
+ */
 class LoginController {
+  /**
+   * Performs login based on an input email and password.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns A JWT token.
+   */
   static async login(req, res, next) {
     const errors = validationResult(req);
 

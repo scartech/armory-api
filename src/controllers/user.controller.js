@@ -3,8 +3,12 @@ const { UserService } = require('../services');
 const ClientMessage = require('../utils/ClientMessage');
 const { validationResult } = require('express-validator');
 
+/**
+ * Handles HTTP requests for the Users model.
+ */
 class UserController {
   /**
+   * Fetches a User for an ID.
    *
    * @param {*} req
    * @param {*} res
@@ -64,6 +68,7 @@ class UserController {
   }
 
   /**
+   * Updates a single User.
    *
    * @param {*} req
    * @param {*} res
@@ -104,6 +109,7 @@ class UserController {
   }
 
   /**
+   * Updates a user password.
    *
    * @param {*} req
    * @param {*} res
@@ -141,6 +147,7 @@ class UserController {
   }
 
   /**
+   * Creates a new User.
    *
    * @param {*} req
    * @param {*} res
@@ -190,6 +197,7 @@ class UserController {
   }
 
   /**
+   * Fetches all users.
    *
    * @param {*} req
    * @param {*} res

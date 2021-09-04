@@ -151,4 +151,34 @@ router.put('/:id', GunController.update);
  */
 router.post('/', GunController.create);
 
+/**
+ * GET /api/guns
+ * @tags Guns
+ * @summary Gets all guns for the logged in user.
+ * @security BearerAuth
+ * @return {object} 200 - success
+ * @example response - 200 - User's Guns
+ * [{
+ *   "id": 0,
+ *   "name": "Shield",
+ *   "serialNumber": "0000000",
+ *   "modelName": "M&P Shield 2.0",
+ *   "manufacturer": "Smith & Wesson",
+ *   "caliber": "9mm",
+ *   "type": "Pistol",
+ *   "action": "Semi Automatic",
+ *   "dealer": "PSA",
+ *   "purchasePrice": 399,
+ *   "purchaseDate": "2021-08-30",
+ *   "buyer": "John Doe",
+ *   "salePrice": 400,
+ *   "saleDate": "2021-08-30",
+ *   "picture": "",
+ *   "userId": 1
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/', GunController.guns);
+
 module.exports = router;

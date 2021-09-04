@@ -15,25 +15,40 @@ class UserFixtures {
   }
 
   static createJWT() {
-    const body = {
+    const user = {
       id: 3,
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'ADMIN',
     };
 
-    return jwt.sign({ user: body }, JWT_SECRET);
+    return this.createJWTForUser(user);
   }
 
   static createUserJWT() {
-    const body = {
+    const user = {
       id: 2,
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'USER',
     };
 
-    return jwt.sign({ user: body }, JWT_SECRET);
+    return this.createJWTForUser(user);
+  }
+
+  static createInvalidUserJWT() {
+    const user = {
+      id: 99999,
+      email: faker.internet.email(),
+      name: faker.name.findName(),
+      role: 'USER',
+    };
+
+    return this.createJWTForUser(user);
+  }
+
+  static createJWTForUser(user) {
+    return jwt.sign({ user }, JWT_SECRET);
   }
 }
 
