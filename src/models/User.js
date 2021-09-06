@@ -65,9 +65,6 @@ const User = db.define(
       },
     },
     defaultScope: {
-      where: {
-        enabled: true,
-      },
       attributes: {
         exclude: ['password'],
       },
