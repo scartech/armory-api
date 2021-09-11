@@ -2,6 +2,7 @@
 **/.dockerignore
 **/.env
 **/.env.test
+**/*.test.js
 **/.git
 **/.gitignore
 **/.project

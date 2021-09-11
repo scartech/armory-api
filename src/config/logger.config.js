@@ -2,7 +2,7 @@ const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
 
 const fileRotateTransport = new transports.DailyRotateFile({
-  filename: `${__dirname}/../../logs/application-%DATE%.log`,
+  filename: `${process.env.LOG_DIR}/application-%DATE%.log`,
   datePattern: 'YYYY-MM-DD',
   zippedArchive: true,
   maxSize: '20m',
@@ -10,7 +10,7 @@ const fileRotateTransport = new transports.DailyRotateFile({
 });
 
 const accessRotateTransport = new transports.DailyRotateFile({
-  filename: `${__dirname}/../../logs/access-%DATE%.log`,
+  filename: `${process.env.LOG_DIR}/access-%DATE%.log`,
   datePattern: 'YYYY-MM-DD',
   zippedArchive: true,
   maxSize: '20m',
