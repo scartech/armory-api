@@ -10,6 +10,7 @@ class GunFixtures {
       caliber: faker.random.alphaNumeric(3),
       type: 'Rifle',
       action: 'Semi',
+      ffl: faker.company.companyName(),
       dealer: faker.company.companyName(),
       purchasePrice: faker.finance.amount(),
       purchaseDate: faker.date.past(),

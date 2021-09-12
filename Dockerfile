@@ -11,6 +11,9 @@ RUN yarn install --production && mv node_modules ../
 # Add node express app
 COPY . .
 
+RUN mkdir /data
+VOLUME /data
+
 RUN chown -R node /app
 USER node
 CMD ["yarn", "start"]
