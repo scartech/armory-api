@@ -58,6 +58,7 @@ const User = db.define(
   },
   {
     underscored: true,
+    paranoid: true,
     tableName: 'users',
     scopes: {
       withPassword: {

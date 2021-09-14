@@ -13,7 +13,9 @@
     "lint": "eslint src/",
     "test": "NODE_ENV=test jest --runInBand",
     "test-coverage": "NODE_ENV=test jest --runInBand --coverage",
-    "test-w": "NODE_ENV=test jest --runInBand --watchAll"
+    "test-w": "NODE_ENV=test jest --runInBand --watchAll",
+    "docker:build": "docker build . -t scartech70/armory-api",
+    "docker:publish": "docker push scartech70/armory-api"
   },
   "author": "Tim Scarborough <scarborough.tim@gmail.com>",
   "license": "Unlicense",

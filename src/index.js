@@ -2,6 +2,7 @@ const passport = require('passport');
 
 const app = require('./server');
 const { DBConfig, logger } = require('./config');
+const { UserService } = require('./services');
 require('./models');
 
 // Authentication middlewares
@@ -21,3 +22,16 @@ DBConfig.sync({ alter: true }).then(() => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
+
+UserService.users().then((users) => {
+  if (!users || users.length === 0) {
+    logger.info('Creating the initial user');
+    UserService.create({
+      email: process.env.INITIAL_USER,
+      name: process.env.INITIAL_USER,
+      password: process.env.INITIAL_PASSWORD,
+      role: 'ADMIN',
+      enabled: true,
+    });
+  }
+});

@@ -78,6 +78,7 @@ const Gun = db.define(
   },
   {
     underscored: true,
+    paranoid: true,
     tableName: 'guns',
     defaultScope: {
       attributes: {
