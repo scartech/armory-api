@@ -80,7 +80,7 @@ class GunService {
         return;
       }
 
-      return user.guns;
+      return user.guns.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
       throw error;
     }
