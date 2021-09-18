@@ -83,12 +83,16 @@ describe('GET /api/guns', () => {
     request(app).get('/api/guns').expect(401, done);
   });
 
-  it('should return 404 on non-existent user', (done) => {
-    request(app)
-      .get('/api/guns')
+  it('should return an empty array for non-existent user', async () => {
+    const res = await request(app)
+      .get(`/api/guns`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
       .expect('Content-Type', /json/)
-      .expect(404, done);
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
   });
 
   it('should return 400 on invalid ID type', (done) => {
@@ -346,66 +350,5 @@ describe('PUT /api/guns/images/:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(200);
-  });
-});
-
-describe('GET /api/guns/images/:id/:type', () => {
-  it('should require authentication', (done) => {
-    request(app).get('/api/guns/images/1/front').expect(401, done);
-  });
-
-  it('should return 404 on non-existent gun', (done) => {
-    request(app)
-      .get('/api/guns/images/888888/front')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(404, done);
-  });
-
-  it('should return 400 on invalid ID type', (done) => {
-    request(app)
-      .get('/api/guns/images/abc/front')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(400, done);
-  });
-
-  it('should respond with the front gun image with URL', async () => {
-    const gun = await Gun.findByPk(guns[0].id);
-    gun.frontImage =
-      'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image';
-
-    await gun.update({
-      frontImage:
-        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
-    });
-
-    const res = await request(app)
-      .get(`/api/guns/images/${gun.id}/front`)
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(res.text).toEqual(gun.frontImage);
-  });
-
-  it('should respond with the front gun image with base64', async () => {
-    const gun = await Gun.findByPk(guns[0].id);
-    const data =
-      'data:image/bmp;base64,Qk1xAAAAAAAAAHsAAABsAAAAAQAAAAEAAAABACAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAD/AAD/AAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==';
-
-    gun.frontImage = data;
-
-    await gun.update({
-      frontImage: data,
-    });
-
-    const res = await request(app)
-      .get(`/api/guns/images/${gun.id}/front`)
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(res.text).toEqual(gun.frontImage);
   });
 });

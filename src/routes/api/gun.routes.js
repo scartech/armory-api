@@ -4,21 +4,6 @@ const { GunController } = require('../../controllers');
 const router = express.Router();
 
 /**
- * GET /api/guns/images/{id}/{type}
- * @tags Guns
- * @summary Gets a gun image for one of the valid types (front, back, or serial)
- * @security BearerAuth
- * @param {integer} id.path - Gun ID
- * @param {string} type.path - Image type - front, back, or serial
- * @return {object} 200 - success
- * @return 401 - Invalid or missing JWT
- * @return {ClientMessage} 400 - Invalid ID
- * @return {ClientMessage} 404 - The gun was not found
- * @return {ClientMessage} 500 - A server error occurred
- */
-router.get('/images/:id/:type', GunController.readImage);
-
-/**
  * GET /api/guns/{id}
  * @tags Guns
  * @summary Gets a single gun by ID
@@ -69,7 +54,7 @@ router.delete('/:id', GunController.delete);
 /**
  * PUT /api/guns/images/{id}
  * @tags Guns
- * @summary Updates a gun
+ * @summary Updates images for a gun
  * @security BearerAuth
  * @param {integer} id.path - Gun ID
  * @param {object} request.body.required - Gun image data
@@ -166,8 +151,8 @@ router.put('/:id', GunController.update);
  *   "picture": "",
  *   "userId": 1
  * }
- * @return {object} 201 - Created a new user
- * @example response - 201 - Created User
+ * @return {object} 201 - Created a new gun
+ * @example response - 201 - Created Gun
  *  {
  *   "id": 1,
  *   "name": "Shield",

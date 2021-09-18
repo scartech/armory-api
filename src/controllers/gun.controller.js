@@ -1,4 +1,3 @@
-const { validationResult } = require('express-validator');
 const { GunService } = require('../services/');
 const ClientMessage = require('../utils/ClientMessage');
 
@@ -66,6 +65,7 @@ class GunController {
    * @returns
    */
   static async read(req, res) {
+    const { userId } = req.user;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -77,30 +77,11 @@ class GunController {
     try {
       const gun = await GunService.read(id);
       if (gun) {
+        if (gun.userId !== userId) {
+          return res.status(401).send();
+        }
+
         res.status(200).json(gun);
-      } else {
-        res.status(404).json(new ClientMessage(true, ['Not found']));
-      }
-    } catch (error) {
-      res.status(500).json(new ClientMessage(true, [error.message]));
-    }
-  }
-
-  static async readImage(req, res) {
-    const { id, type } = req.params;
-
-    if (isNaN(id)) {
-      return res
-        .status(400)
-        .json(new ClientMessage(true, ['Invalid parameter']));
-    }
-
-    try {
-      let image = await GunService.readImage(id, type);
-      if (image) {
-        image =
-          'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
-        return res.status(200).send(image);
       } else {
         res.status(404).json(new ClientMessage(true, ['Not found']));
       }
@@ -117,6 +98,7 @@ class GunController {
    * @returns
    */
   static async update(req, res) {
+    const { userId } = req.user;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -129,6 +111,10 @@ class GunController {
       const gun = await GunService.read(id);
       if (!gun) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      if (gun.userId !== userId) {
+        return res.status(401).send();
       }
 
       const {
@@ -182,6 +168,7 @@ class GunController {
    * @returns
    */
   static async updateImages(req, res) {
+    const { userId } = req.user;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -194,6 +181,10 @@ class GunController {
       const gun = await GunService.read(id);
       if (!gun) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      if (gun.userId !== userId) {
+        return res.status(401).send();
       }
 
       const { frontImage, backImage, serialImage } = req.body;
@@ -222,6 +213,7 @@ class GunController {
    * @returns
    */
   static async delete(req, res) {
+    const { userId } = req.user;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -234,6 +226,10 @@ class GunController {
       const gun = await GunService.read(id);
       if (!gun) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      if (gun.userId !== userId) {
+        return res.status(401).send();
       }
 
       const success = await GunService.delete(id);

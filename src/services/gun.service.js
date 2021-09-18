@@ -1,5 +1,5 @@
+const { Op } = require('sequelize');
 const { Gun } = require('../models');
-const UserService = require('./user.service');
 
 /**
  * Service class for Gun CRUD ops.
@@ -61,35 +61,7 @@ class GunService {
    */
   static async read(id) {
     try {
-      return await Gun.findByPk(id);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Reads a single image from the DB (front, back, serial)
-   *
-   * @param {integer} id
-   * @param {string} type
-   */
-  static async readImage(id, type) {
-    try {
-      const gun = await Gun.findByPk(id);
-      if (!gun) {
-        return;
-      }
-
-      switch (type) {
-        case 'front':
-          return gun.frontImage;
-        case 'back':
-          return gun.backImage;
-        case 'serial':
-          return gun.serialImage;
-        default:
-          return;
-      }
+      return await Gun.findByPk(id, { include: ['history'] });
     } catch (error) {
       throw error;
     }
@@ -103,12 +75,14 @@ class GunService {
    */
   static async guns(userId) {
     try {
-      const user = await UserService.read(userId);
-      if (!user) {
-        return;
-      }
-
-      return user.guns.sort((a, b) => a.name.localeCompare(b.name));
+      return await Gun.findAll({
+        where: {
+          userId: {
+            [Op.eq]: userId,
+          },
+        },
+        order: [['name', 'ASC']],
+      });
     } catch (error) {
       throw error;
     }

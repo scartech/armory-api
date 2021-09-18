@@ -1,3 +1,4 @@
+History = require('./History');
 Gun = require('./Gun');
 User = require('./User');
 
@@ -15,7 +16,21 @@ Gun.belongsTo(User, {
   },
 });
 
+Gun.hasMany(History, {
+  as: 'history',
+  foreignKey: {
+    name: 'gunId',
+  },
+});
+
+History.belongsTo(Gun, {
+  foreignKey: {
+    name: 'gunId',
+  },
+});
+
 module.exports = {
   Gun,
+  History,
   User,
 };
