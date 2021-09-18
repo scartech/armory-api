@@ -133,7 +133,7 @@ describe('GET /api/guns', () => {
   });
 });
 
-describe('GET /api/guns:id', () => {
+describe('GET /api/guns/:id', () => {
   it('should require authentication', (done) => {
     request(app).get('/api/guns/1').expect(401, done);
   });
@@ -168,7 +168,7 @@ describe('GET /api/guns:id', () => {
   });
 });
 
-describe('DELETE /api/guns:id', () => {
+describe('DELETE /api/guns/:id', () => {
   it('should require authentication', (done) => {
     request(app).delete('/api/guns/1').expect(401, done);
   });
@@ -200,7 +200,7 @@ describe('DELETE /api/guns:id', () => {
   });
 });
 
-describe('PUT /api/guns:id', () => {
+describe('PUT /api/guns/:id', () => {
   it('should require authentication', (done) => {
     request(app).put('/api/guns/1').expect(401, done);
   });
@@ -272,7 +272,7 @@ describe('PUT /api/guns:id', () => {
   });
 });
 
-describe('POST /api/guns:id', () => {
+describe('POST /api/guns/:id', () => {
   it('should require authentication', (done) => {
     request(app).post('/api/guns').expect(401, done);
   });
@@ -300,5 +300,112 @@ describe('POST /api/guns:id', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect('Content-Type', /json/)
       .expect(201, done);
+  });
+});
+
+describe('PUT /api/guns/images/:id', () => {
+  it('should require authentication', (done) => {
+    request(app).put('/api/guns/images/1').expect(401, done);
+  });
+
+  it('should return 404 for non-existent gun', (done) => {
+    const gun = guns[1];
+
+    const values = {
+      frontImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+      backImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+      serialImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+    };
+
+    request(app)
+      .put(`/api/guns/images/99999`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+  });
+
+  it('should update gun', async () => {
+    const gun = guns[1];
+
+    const values = {
+      frontImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+      backImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+      serialImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+    };
+
+    const res = await request(app)
+      .put(`/api/guns/images/${gun.id}`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+  });
+});
+
+describe('GET /api/guns/images/:id/:type', () => {
+  it('should require authentication', (done) => {
+    request(app).get('/api/guns/images/1/front').expect(401, done);
+  });
+
+  it('should return 404 on non-existent gun', (done) => {
+    request(app)
+      .get('/api/guns/images/888888/front')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+  });
+
+  it('should return 400 on invalid ID type', (done) => {
+    request(app)
+      .get('/api/guns/images/abc/front')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(400, done);
+  });
+
+  it('should respond with the front gun image with URL', async () => {
+    const gun = await Gun.findByPk(guns[0].id);
+    gun.frontImage =
+      'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image';
+
+    await gun.update({
+      frontImage:
+        'https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image',
+    });
+
+    const res = await request(app)
+      .get(`/api/guns/images/${gun.id}/front`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(res.text).toEqual(gun.frontImage);
+  });
+
+  it('should respond with the front gun image with base64', async () => {
+    const gun = await Gun.findByPk(guns[0].id);
+    const data =
+      'data:image/bmp;base64,Qk1xAAAAAAAAAHsAAABsAAAAAQAAAAEAAAABACAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAD/AAD/AAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==';
+
+    gun.frontImage = data;
+
+    await gun.update({
+      frontImage: data,
+    });
+
+    const res = await request(app)
+      .get(`/api/guns/images/${gun.id}/front`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(res.text).toEqual(gun.frontImage);
   });
 });

@@ -68,6 +68,34 @@ class GunService {
   }
 
   /**
+   * Reads a single image from the DB (front, back, serial)
+   *
+   * @param {integer} id
+   * @param {string} type
+   */
+  static async readImage(id, type) {
+    try {
+      const gun = await Gun.findByPk(id);
+      if (!gun) {
+        return;
+      }
+
+      switch (type) {
+        case 'front':
+          return gun.frontImage;
+        case 'back':
+          return gun.backImage;
+        case 'serial':
+          return gun.serialImage;
+        default:
+          return;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Reads all guns for a single user from the DB.
    *
    * @param {*} userId
@@ -132,6 +160,32 @@ class GunService {
         salePrice,
         saleDate,
         ffl,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Updates images for a Gun
+   *
+   * @param {integer} id
+   * @param {object} values
+   * @returns
+   */
+  static async updateImages(id, values) {
+    try {
+      const gun = await Gun.findByPk(id);
+      if (!gun) {
+        throw new Error('Gun not found.');
+      }
+
+      const { frontImage, backImage, serialImage } = values;
+
+      return await gun.update({
+        frontImage,
+        backImage,
+        serialImage,
       });
     } catch (error) {
       throw error;

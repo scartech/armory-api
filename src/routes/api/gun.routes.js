@@ -4,6 +4,21 @@ const { GunController } = require('../../controllers');
 const router = express.Router();
 
 /**
+ * GET /api/guns/images/{id}/{type}
+ * @tags Guns
+ * @summary Gets a gun image for one of the valid types (front, back, or serial)
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @param {string} type.path - Image type - front, back, or serial
+ * @return {object} 200 - success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/images/:id/:type', GunController.readImage);
+
+/**
  * GET /api/guns/{id}
  * @tags Guns
  * @summary Gets a single gun by ID
@@ -50,6 +65,27 @@ router.get('/:id', GunController.read);
  * @return {ClientMessage} 500 - A server error occurred
  */
 router.delete('/:id', GunController.delete);
+
+/**
+ * PUT /api/guns/images/{id}
+ * @tags Guns
+ * @summary Updates a gun
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @param {object} request.body.required - Gun image data
+ * @example request - Existing Gun
+ * {
+ *   "frontImage": "https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image",
+ *   "backImage": "https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image",
+ *   "serialImage": "https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=No%20Image"
+ * }
+ * @return 200 - Success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.put('/images/:id', GunController.updateImages);
 
 /**
  * PUT /api/guns/{id}

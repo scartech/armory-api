@@ -86,6 +86,29 @@ class GunController {
     }
   }
 
+  static async readImage(req, res) {
+    const { id, type } = req.params;
+
+    if (isNaN(id)) {
+      return res
+        .status(400)
+        .json(new ClientMessage(true, ['Invalid parameter']));
+    }
+
+    try {
+      let image = await GunService.readImage(id, type);
+      if (image) {
+        image =
+          'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+        return res.status(200).send(image);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
   /**
    * Updates a gun by ID.
    *
@@ -140,6 +163,45 @@ class GunController {
         salePrice,
         saleDate,
         ffl,
+      });
+
+      if (updatedGun) {
+        res.status(200).json(updatedGun);
+      } else {
+        res.status(500).json(new ClientMessage(true, ['Update failed']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
+   * Updates images for a Gun
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async updateImages(req, res) {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+      return res
+        .status(400)
+        .json(new ClientMessage(true, ['Invalid parameter']));
+    }
+
+    try {
+      const gun = await GunService.read(id);
+      if (!gun) {
+        return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      const { frontImage, backImage, serialImage } = req.body;
+
+      const updatedGun = await GunService.updateImages(id, {
+        frontImage,
+        backImage,
+        serialImage,
       });
 
       if (updatedGun) {

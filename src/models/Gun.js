@@ -19,7 +19,9 @@ const db = require('../config/db.config');
  * @property {string} buyer - Who was the gun sold to
  * @property {number} salePrice - How much was the gun sold for - float
  * @property {string} saleDate - When was the gun sold - date
- * @property {string} picture - A picture of the fun - byte
+ * @property {string} backImage - URL or base64 image data of the front of the gun
+ * @property {string} frontImage - URL or base64 image data of the back of the gun
+ * @property {string} serialImage - URL or base64 image data of the serial number of the gun
  * @property {integer} userId.required - ID of the user that owns the gun
  */
 const Gun = db.define(
@@ -72,8 +74,14 @@ const Gun = db.define(
     saleDate: {
       type: DataTypes.DATEONLY,
     },
-    picture: {
-      type: DataTypes.BLOB,
+    frontImage: {
+      type: DataTypes.TEXT,
+    },
+    backImage: {
+      type: DataTypes.TEXT,
+    },
+    serialImage: {
+      type: DataTypes.TEXT,
     },
   },
   {
