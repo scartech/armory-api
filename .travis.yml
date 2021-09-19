@@ -1,7 +1,11 @@
+language: node_js
+os:
+  - linux
+dist:
+  - xenial
 branches:
   only:
     - main
-language: node_js
 node_js:
   - 'node'
 services:
