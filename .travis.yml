@@ -5,13 +5,3 @@ services:
   - postgresql
 before_script:
   - psql -c 'create database armory_test;' -U postgres
-env:
-  - PORT=5000
-  - CORS_ORIGIN=http://localhost:3000
-  - DB_NAME=armory-dev
-  - DB_HOST=127.0.0.1
-  - DB_PORT=5432
-  - DB_USER=postgres
-  - LOG_DIR=/var/log/armory-api
-  - INITIAL_USER=testing@gmail.com
-  - INITIAL_PASSWORD=password
