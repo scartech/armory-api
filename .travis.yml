@@ -1,7 +1,9 @@
 language: node_js
-os:
-  - linux
-dist: xenial
+os: linux
+arch:
+  - arm64
+  - ppc64le
+  - s390x
 branches:
   only:
     - main
