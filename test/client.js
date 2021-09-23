@@ -13,7 +13,10 @@ pgclient.connect();
 const db = 'CREATE DATABASE armory-test;'
 
 pgclient.query(db, (err, res) => {
-    if (err) throw err
+    if (err) {
+      console.log(err);
+      throw err;
+    }
 });
 
 pgclient.end();
