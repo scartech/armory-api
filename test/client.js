@@ -8,21 +8,22 @@ const pgclient = new Client({
     database: process.env.POSTGRES_DB
 });
 
-console.log('process.env.POSTGRES_HOST = ' + process.env.POSTGRES_HOST);
-console.log('process.env.POSTGRES_PORT = ' + process.env.POSTGRES_PORT);
-
-pgclient.on('error', function(e) {
-  console.log(e);
-})
 pgclient.connect();
 
-const db = 'CREATE TABLE testing(id integer);'
+const table = 'CREATE TABLE student(id SERIAL PRIMARY KEY, firstName VARCHAR(40) NOT NULL, lastName VARCHAR(40) NOT NULL, age INT, address VARCHAR(80), email VARCHAR(40))'
+const text = 'INSERT INTO student(firstname, lastname, age, address, email) VALUES($1, $2, $3, $4, $5) RETURNING *'
+const values = ['Mona the', 'Octocat', 9, '88 Colin P Kelly Jr St, San Francisco, CA 94107, United States', 'octocat@github.com']
 
-pgclient.query(db, (err, res) => {
-    if (err) {
-      console.log(err);
-      throw err;
-    }
+pgclient.query(table, (err, res) => {
+    if (err) throw err
 });
 
-pgclient.end();
+pgclient.query(text, values, (err, res) => {
+    if (err) throw err
+});
+
+pgclient.query('SELECT * FROM student', (err, res) => {
+    if (err) throw err
+    console.log(err, res.rows) // Print the data in student table
+    pgclient.end()
+});
