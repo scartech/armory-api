@@ -11,6 +11,9 @@ const pgclient = new Client({
 console.log('process.env.POSTGRES_HOST = ' + process.env.POSTGRES_HOST);
 console.log('process.env.POSTGRES_PORT = ' + process.env.POSTGRES_PORT);
 
+pgclient.on('error', function(e) {
+  console.log(e);
+})
 pgclient.connect();
 
 const db = 'CREATE DATABASE armory-test;'
