@@ -7,6 +7,9 @@ const pgclient = new Client({
     password: 'postgres'
 });
 
+console.log('process.env.POSTGRES_HOST = ' + process.env.POSTGRES_HOST);
+console.log('process.env.POSTGRES_PORT = ' + process.env.POSTGRES_PORT);
+
 pgclient.connect();
 
 const db = 'CREATE DATABASE armory-test;'
