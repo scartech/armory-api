@@ -12,6 +12,3 @@ services:
   - docker
 before_script:
   - psql -c 'create database armory_test;' -U postgres
-after_success:
-  - docker build . -t scartech70/armory-api
-  - docker push scartech70/armory-api
