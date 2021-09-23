@@ -46,3 +46,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: armory-test
+          
+      - name: Test
+        run: yarn test
