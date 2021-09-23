@@ -13,7 +13,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: armory-test
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -67,4 +66,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: scartech70/armory-upi:latest
+          tags: scartech70/armory-api:latest
