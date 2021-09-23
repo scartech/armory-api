@@ -16,7 +16,7 @@ pgclient.on('error', function(e) {
 })
 pgclient.connect();
 
-const db = 'CREATE DATABASE armory-test;'
+const db = 'CREATE TABLE testing(id integer);'
 
 pgclient.query(db, (err, res) => {
     if (err) {
