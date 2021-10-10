@@ -4,4 +4,5 @@ module.exports = {
   ProfileService: require('./profile.service'),
   HistoryService: require('./history.service'),
   AmmoService: require('./ammo.service'),
+  DashboardService: require('./dashboard.service'),
 };

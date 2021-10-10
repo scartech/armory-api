@@ -5,4 +5,5 @@ module.exports = {
   LoginController: require('./login.controller'),
   ProfileController: require('./profile.controller'),
   AmmoController: require('./ammo.controller'),
+  DashboardController: require('./dashboard.controller'),
 };
