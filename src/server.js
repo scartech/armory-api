@@ -12,7 +12,7 @@ const router = require('./routes');
 
 const app = express();
 app.disable('x-powered-by');
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({ limit: '75mb' }));
 
 app.use(
   cors({
