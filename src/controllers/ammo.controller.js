@@ -59,7 +59,7 @@ class AmmoController {
    * @returns
    */
   static async read(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -92,7 +92,7 @@ class AmmoController {
    * @returns
    */
   static async update(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -157,7 +157,7 @@ class AmmoController {
    * @returns
    */
   static async delete(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {

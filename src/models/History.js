@@ -39,11 +39,6 @@ const History = db.define(
     underscored: true,
     paranoid: true,
     tableName: 'history',
-    defaultScope: {
-      attributes: {
-        exclude: ['gunId'],
-      },
-    },
   },
 );
 

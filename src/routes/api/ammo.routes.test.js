@@ -7,7 +7,7 @@ const { UserFixtures, AmmoFixtures } = require('../../test');
 const { DBConfig } = require('../../config');
 require('../../models');
 
-const NUM_USERS = 10;
+const NUM_USERS = 1;
 let jwtToken;
 let invalidUserJwtToken;
 let users = [];
@@ -46,7 +46,9 @@ beforeAll((done) => {
                 users = userData.map((x) => x.dataValues);
 
                 users.map((user) => {
-                  ammoPromises.push(AmmoFixtures.createAmmo(user.id));
+                  for (let i = 0; i < 10; i++) {
+                    ammoPromises.push(AmmoFixtures.createAmmo(user.id));
+                  }
                 });
 
                 Promise.all(ammoPromises).then((ammoData) => {
@@ -127,13 +129,13 @@ describe('GET /api/ammo', () => {
   it('should respond with ammo', async () => {
     const res = await request(app)
       .get(`/api/ammo`)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(ammo[2].userId)}`)
       .expect('Content-Type', /json/)
       .expect(200);
 
     expect(res.body).toBeDefined();
     expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(1);
+    expect(res.body.length).toEqual(10);
   });
 });
 
@@ -159,13 +161,13 @@ describe('GET /api/ammo/:id', () => {
   });
 
   it('should respond with ammo', async () => {
-    const theAmmo = ammo[0];
+    const theAmmo = ammo[3];
 
     const res = await request(app)
       .get(`/api/ammo/${theAmmo.id}`)
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(theAmmo.userId)}`)
+      .expect(200)
+      .expect('Content-Type', /json/);
 
     expect(res.body).toBeDefined();
     expect(res.body.id).toEqual(theAmmo.id);
@@ -194,8 +196,8 @@ describe('DELETE /api/ammo/:id', () => {
 
   it('should delete ammo', (done) => {
     request(app)
-      .delete(`/api/ammo/${ammo[0].id}`)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .delete(`/api/ammo/${ammo[2].id}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(ammo[2].userId)}`)
       .expect(200)
       .end(() => {
         ammo.splice(0, 1);
@@ -229,13 +231,13 @@ describe('PUT /api/ammo/:id', () => {
     request(app)
       .put(`/api/ammo/99999`)
       .send(values)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(theAmmo.userId)}`)
       .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
   it('should update ammo', async () => {
-    const theAmmo = ammo[1];
+    const theAmmo = ammo[5];
 
     const values = {
       weight: faker.hacker.verb(),
@@ -254,7 +256,7 @@ describe('PUT /api/ammo/:id', () => {
     const res = await request(app)
       .put(`/api/ammo/${theAmmo.id}`)
       .send(values)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(theAmmo.userId)}`)
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -294,7 +296,7 @@ describe('POST /api/ammo/:id', () => {
     request(app)
       .post('/api/ammo/')
       .send(values)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(ammo[3].userId)}`)
       .expect('Content-Type', /json/)
       .expect(201, done);
   });

@@ -7,7 +7,7 @@ const { UserFixtures, GunFixtures } = require('../../test');
 const { DBConfig } = require('../../config');
 require('../../models');
 
-const NUM_USERS = 10;
+const NUM_USERS = 1;
 let jwtToken;
 let invalidUserJwtToken;
 let users = [];
@@ -46,7 +46,9 @@ beforeAll((done) => {
                 users = userData.map((x) => x.dataValues);
 
                 users.map((user) => {
-                  gunPromises.push(GunFixtures.createGun(user.id));
+                  for (let j = 0; j < 10; j++) {
+                    gunPromises.push(GunFixtures.createGun(user.id));
+                  }
                 });
 
                 Promise.all(gunPromises).then((gunData) => {
@@ -133,7 +135,7 @@ describe('GET /api/guns', () => {
 
     expect(res.body).toBeDefined();
     expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(1);
+    expect(res.body.length).toEqual(guns.length);
   });
 });
 
@@ -194,7 +196,7 @@ describe('DELETE /api/guns/:id', () => {
 
   it('should delete gun', (done) => {
     request(app)
-      .delete(`/api/guns/${guns[0].id}`)
+      .delete(`/api/guns/${guns[guns.length - 1].id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(200)
       .end(() => {
@@ -210,7 +212,7 @@ describe('PUT /api/guns/:id', () => {
   });
 
   it('should return 404 for non-existent gun', (done) => {
-    const gun = guns[1];
+    const gun = guns[0];
 
     const values = {
       serialNumber: faker.hacker.verb(),
@@ -237,7 +239,7 @@ describe('PUT /api/guns/:id', () => {
   });
 
   it('should update gun', async () => {
-    const gun = guns[1];
+    const gun = guns[0];
 
     const values = {
       serialNumber: faker.hacker.verb(),

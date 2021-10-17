@@ -4,6 +4,75 @@ const { GunController } = require('../../controllers');
 const router = express.Router();
 
 /**
+ * GET /api/guns/images/{id}
+ * @tags Guns
+ * @summary Gets all images of a gun
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @return {object} 200 - success
+ * @example response - 200 - Existing Gun
+ * {
+ *   "id": 0,
+ *   "name": "Shield",
+ *   "serialNumber": "0000000",
+ *   "modelName": "M&P Shield 2.0",
+ *   "manufacturer": "Smith & Wesson",
+ *   "caliber": "9mm",
+ *   "type": "Pistol",
+ *   "action": "Semi Automatic",
+ *   "dealer": "PSA",
+ *   "ffl": "PSA",
+ *   "purchasePrice": 399,
+ *   "purchaseDate": "2021-08-30",
+ *   "buyer": "John Doe",
+ *   "salePrice": 400,
+ *   "saleDate": "2021-08-30",
+ *   "picture": "",
+ *   "userId": 1
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/images/:id/', GunController.readImages);
+
+/**
+ * GET /api/guns/images/{id}/{type}
+ * @tags Guns
+ * @summary Gets a single gun by ID
+ * @security BearerAuth
+ * @param {integer} id.path - Gun ID
+ * @param {string} type.path - Image type (front, back, serial, receipt)
+ * @return {object} 200 - success
+ * @example response - 200 - Existing Gun
+ * {
+ *   "id": 0,
+ *   "name": "Shield",
+ *   "serialNumber": "0000000",
+ *   "modelName": "M&P Shield 2.0",
+ *   "manufacturer": "Smith & Wesson",
+ *   "caliber": "9mm",
+ *   "type": "Pistol",
+ *   "action": "Semi Automatic",
+ *   "dealer": "PSA",
+ *   "ffl": "PSA",
+ *   "purchasePrice": 399,
+ *   "purchaseDate": "2021-08-30",
+ *   "buyer": "John Doe",
+ *   "salePrice": 400,
+ *   "saleDate": "2021-08-30",
+ *   "picture": "",
+ *   "userId": 1
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/images/:id/:type', GunController.readForImage);
+
+/**
  * GET /api/guns/{id}
  * @tags Guns
  * @summary Gets a single gun by ID

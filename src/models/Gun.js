@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Sequelize } = require('sequelize');
 const db = require('../config/db.config');
 
 /**
@@ -83,6 +83,45 @@ const Gun = db.define(
     serialImage: {
       type: DataTypes.TEXT,
     },
+    receiptImage: {
+      type: DataTypes.TEXT,
+    },
+    frontImageSize: {
+      type: DataTypes.VIRTUAL,
+    },
+    backImageSize: {
+      type: DataTypes.VIRTUAL,
+    },
+    serialImageSize: {
+      type: DataTypes.VIRTUAL,
+    },
+    receiptImageSize: {
+      type: DataTypes.VIRTUAL,
+    },
+    hasFrontRawImage: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.frontImageSize > 100;
+      },
+    },
+    hasBackRawImage: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.backImageSize > 100;
+      },
+    },
+    hasSerialRawImage: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.serialImageSize > 100;
+      },
+    },
+    hasReceiptRawImage: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.receiptImageSize > 100;
+      },
+    },
   },
   {
     underscored: true,
@@ -90,7 +129,52 @@ const Gun = db.define(
     tableName: 'guns',
     defaultScope: {
       attributes: {
-        exclude: ['userId'],
+        exclude: ['frontImage', 'backImage', 'serialImage', 'receiptImage'],
+        include: [
+          [
+            Sequelize.fn('length', Sequelize.col('front_image')),
+            'frontImageSize',
+          ],
+          [
+            Sequelize.fn('length', Sequelize.col('back_image')),
+            'backImageSize',
+          ],
+          [
+            Sequelize.fn('length', Sequelize.col('serial_image')),
+            'serialImageSize',
+          ],
+          [
+            Sequelize.fn('length', Sequelize.col('receipt_image')),
+            'receiptImageSize',
+          ],
+        ],
+      },
+    },
+    scopes: {
+      frontImage: {
+        attributes: {
+          include: ['frontImage'],
+        },
+      },
+      backImage: {
+        attributes: {
+          include: ['backImage'],
+        },
+      },
+      serialImage: {
+        attributes: {
+          include: ['serialImage'],
+        },
+      },
+      receiptImage: {
+        attributes: {
+          include: ['receiptImage'],
+        },
+      },
+      allImages: {
+        attributes: {
+          include: ['frontImage', 'backImage', 'serialImage', 'receiptImage'],
+        },
       },
     },
   },

@@ -64,11 +64,6 @@ const Ammo = db.define(
     underscored: true,
     paranoid: true,
     tableName: 'ammo',
-    defaultScope: {
-      attributes: {
-        exclude: ['userId'],
-      },
-    },
   },
 );
 

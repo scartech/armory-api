@@ -61,7 +61,74 @@ class GunService {
    */
   static async read(id) {
     try {
-      return await Gun.findByPk(id, { include: ['history'] });
+      return await Gun.findByPk(id, {
+        include: ['history'],
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Reads all images for a single Gun from the DB
+   *
+   * @param {integer} id
+   * @returns
+   */
+  static async readImages(id) {
+    try {
+      const gun = await Gun.scope('allImages').findByPk(id);
+
+      if (gun == null) {
+        return null;
+      }
+
+      return {
+        id: gun.id,
+        userId: gun.userId,
+        frontImage: gun.frontImage,
+        backImage: gun.backImage,
+        serialImage: gun.serialImage,
+        receiptImage: gun.receiptImage,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Reads a single Gun image from the DB
+   *
+   * @param {integer} id
+   * @param {string} type image type (back, front, serial, receipt)
+   * @returns
+   */
+  static async readForImage(id, type) {
+    try {
+      let scope;
+
+      switch (type) {
+        case 'front':
+          scope = 'frontImage';
+          break;
+        case 'back':
+          scope = 'backImage';
+          break;
+        case 'serial':
+          scope = 'serialImage';
+          break;
+        case 'receipt':
+          scope = 'receiptImage';
+          break;
+      }
+
+      const gun = await Gun.scope(scope).findByPk(id);
+
+      if (gun == null) {
+        return null;
+      }
+
+      return gun;
     } catch (error) {
       throw error;
     }
@@ -154,12 +221,13 @@ class GunService {
         throw new Error('Gun not found.');
       }
 
-      const { frontImage, backImage, serialImage } = values;
+      const { frontImage, backImage, serialImage, receiptImage } = values;
 
       return await gun.update({
         frontImage,
         backImage,
         serialImage,
+        receiptImage,
       });
     } catch (error) {
       throw error;

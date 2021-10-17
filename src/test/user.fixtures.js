@@ -16,7 +16,7 @@ class UserFixtures {
 
   static createJWT() {
     const user = {
-      id: 3,
+      id: 1,
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'ADMIN',
@@ -25,9 +25,9 @@ class UserFixtures {
     return this.createJWTForUser(user);
   }
 
-  static createUserJWT() {
+  static createUserJWT(userId) {
     const user = {
-      id: 2,
+      id: userId ? userId : 1,
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'USER',

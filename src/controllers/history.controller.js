@@ -15,7 +15,7 @@ class HistoryController {
    */
   static async all(req, res) {
     const { gunId } = req.params;
-    const { userId } = req.user;
+    const userId = req.user.id;
 
     if (isNaN(gunId)) {
       return res
@@ -51,7 +51,7 @@ class HistoryController {
    * @param {*} res
    */
   static async create(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { gunId } = req.params;
     const { name, type, narrative, roundCount, eventDate } = req.body;
 
@@ -90,7 +90,7 @@ class HistoryController {
    * @param {*} res
    */
   static async update(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { gunId, id } = req.params;
     const { name, type, narrative, roundCount, eventDate } = req.body;
 
@@ -138,7 +138,7 @@ class HistoryController {
    * @returns
    */
   static async read(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { gunId, id } = req.params;
 
     if (isNaN(id)) {
@@ -186,7 +186,7 @@ class HistoryController {
    * @returns
    */
   static async delete(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { gunId, id } = req.params;
 
     if (isNaN(id)) {

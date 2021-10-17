@@ -7,7 +7,7 @@ const { UserFixtures, GunFixtures, HistoryFixtures } = require('../../test');
 const { DBConfig } = require('../../config');
 require('../../models');
 
-const NUM_USERS = 10;
+const NUM_USERS = 1;
 let jwtToken;
 let invalidUserJwtToken;
 let users = [];
@@ -47,26 +47,34 @@ beforeAll((done) => {
                 users = userData.map((x) => x.dataValues);
 
                 users.map((user) => {
-                  gunPromises.push(GunFixtures.createGun(user.id));
-                });
+                  for (let i = 0; i < 10; i++) {
+                    gunPromises.push(GunFixtures.createGun(user.id));
+                  }
 
-                Promise.all(gunPromises).then((gunData) => {
-                  guns = gunData.map((x) => x.dataValues);
-                  const historyPromises = [];
+                  Promise.all(gunPromises).then((gunData) => {
+                    guns = gunData.map((x) => x.dataValues);
+                    const historyPromises = [];
 
-                  guns.map((gun) => {
-                    historyPromises.push(HistoryFixtures.createHistory(gun.id));
-                  });
-
-                  Promise.all(historyPromises).then((historyData) => {
-                    histories = historyData.map((x) => x.dataValues);
-
-                    histories.map((history) => {
-                      const g = guns.filter((gun) => gun.id === history.gunId);
-                      g.forEach((gun) => (gun.history = [history]));
+                    guns.map((gun) => {
+                      for (let i = 0; i < 10; i++) {
+                        historyPromises.push(
+                          HistoryFixtures.createHistory(gun.id),
+                        );
+                      }
                     });
 
-                    done();
+                    Promise.all(historyPromises).then((historyData) => {
+                      histories = historyData.map((x) => x.dataValues);
+
+                      histories.map((history) => {
+                        const g = guns.filter(
+                          (gun) => gun.id === history.gunId,
+                        );
+                        g.forEach((gun) => (gun.history = [history]));
+                      });
+
+                      done();
+                    });
                   });
                 });
               })
@@ -116,14 +124,14 @@ describe('GET /api/history/:id', () => {
   });
 
   it('should respond with history', async () => {
-    const gun = guns[0];
+    const gun = guns[7];
     const history = gun.history[0];
 
     const res = await request(app)
       .get(`/api/history/${gun.id}`)
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(gun.userId)}`)
+      .expect(200)
+      .expect('Content-Type', /json/);
 
     expect(res.body).toBeDefined();
     expect(Array.isArray(res.body)).toBeTruthy();
@@ -152,11 +160,12 @@ describe('GET /api/history/:gunId/:id', () => {
   });
 
   it('should respond with history', async () => {
-    const history = histories[0];
+    const gun = guns[1];
+    const history = gun.history[0];
 
     const res = await request(app)
-      .get(`/api/history/${history.gunId}/${history.id}`)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .get(`/api/history/${gun.id}/${history.id}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(gun.userId)}`)
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -186,9 +195,12 @@ describe('DELETE /api/history/:gunId/:id', () => {
   });
 
   it('should delete history', (done) => {
+    const gun = guns[0];
+    const history = gun.history[0];
+
     request(app)
-      .delete(`/api/history/${histories[0].gunId}/${histories[0].id}`)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .delete(`/api/history/${gun.id}/${history.id}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(gun.userId)}`)
       .expect(200)
       .end(() => {
         histories.splice(0, 1);
@@ -222,7 +234,8 @@ describe('PUT /api/history/:gunId/:id', () => {
   });
 
   it('should update history', async () => {
-    const history = histories[1];
+    const gun = guns[3];
+    const history = gun.history[0];
 
     const values = {
       name: faker.company.bsBuzz(),
@@ -233,9 +246,9 @@ describe('PUT /api/history/:gunId/:id', () => {
     };
 
     const res = await request(app)
-      .put(`/api/history/${history.gunId}/${history.id}`)
+      .put(`/api/history/${gun.id}/${history.id}`)
       .send(values)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(gun.userId)}`)
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -252,7 +265,7 @@ describe('POST /api/history/:gunId', () => {
   });
 
   it('should create history', (done) => {
-    const history = histories[1];
+    const gun = guns[4];
 
     const values = {
       name: faker.company.bsBuzz(),
@@ -263,9 +276,9 @@ describe('POST /api/history/:gunId', () => {
     };
 
     request(app)
-      .post(`/api/history/${history.gunId}`)
+      .post(`/api/history/${gun.id}`)
       .send(values)
-      .set('Authorization', `Bearer ${jwtToken}`)
+      .set('Authorization', `Bearer ${UserFixtures.createJWT(gun.userId)}`)
       .expect('Content-Type', /json/)
       .expect(201, done);
   });

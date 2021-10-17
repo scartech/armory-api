@@ -65,7 +65,7 @@ class GunController {
    * @returns
    */
   static async read(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -91,6 +91,91 @@ class GunController {
   }
 
   /**
+   * Reads a gun by ID.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async readImages(req, res) {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+      return res
+        .status(400)
+        .json(new ClientMessage(true, ['Invalid parameter']));
+    }
+
+    try {
+      const images = await GunService.readImages(id);
+      if (images) {
+        if (images.userId !== userId) {
+          return res.status(401).send();
+        }
+
+        res.status(200).json(images);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
+   * Reads a gun image by ID and type.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async readForImage(req, res) {
+    const userId = req.user.id;
+    const { id, type } = req.params;
+
+    if (isNaN(id)) {
+      return res
+        .status(400)
+        .json(new ClientMessage(true, ['Invalid parameter']));
+    }
+
+    try {
+      const gun = await GunService.readForImage(id, type);
+      if (gun) {
+        if (gun.userId !== userId) {
+          return res.status(401).send();
+        }
+
+        const image = {
+          type,
+        };
+
+        switch (type) {
+          case 'front':
+            image.src = gun.frontImage;
+            break;
+          case 'back':
+            image.src = gun.backImage;
+            break;
+          case 'serial':
+            image.src = gun.serialImage;
+            break;
+          case 'receipt':
+            image.src = gun.receiptImage;
+            break;
+        }
+
+        res.status(200).json(image);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
    * Updates a gun by ID.
    *
    * @param {*} req
@@ -98,7 +183,7 @@ class GunController {
    * @returns
    */
   static async update(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -168,7 +253,7 @@ class GunController {
    * @returns
    */
   static async updateImages(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
@@ -187,12 +272,13 @@ class GunController {
         return res.status(401).send();
       }
 
-      const { frontImage, backImage, serialImage } = req.body;
+      const { frontImage, backImage, serialImage, receiptImage } = req.body;
 
       const updatedGun = await GunService.updateImages(id, {
         frontImage,
         backImage,
         serialImage,
+        receiptImage,
       });
 
       if (updatedGun) {
@@ -213,7 +299,7 @@ class GunController {
    * @returns
    */
   static async delete(req, res) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const { id } = req.params;
 
     if (isNaN(id)) {
