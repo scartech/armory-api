@@ -27,23 +27,35 @@ class DashboardService {
       });
       guns = guns ? guns : [];
 
+      const totalGunCost = guns.reduce(
+        (accumulator, current) =>
+          accumulator + parseFloat(current.purchasePrice),
+        0,
+      );
+
+      const totalAmmoCost = ammo.reduce(
+        (accumulator, current) =>
+          accumulator + parseFloat(current.purchasePrice),
+        0,
+      );
+
+      const rifleCount = guns.filter((x) => x.type === 'Rifle').length;
+      const pistolCount = guns.filter((x) => x.type === 'Pistol').length;
+      const shotgunCount = guns.filter((x) => x.type === 'Shotgun').length;
+
       return {
         gunCount: guns.length,
+        rifleCount,
+        pistolCount,
+        shotgunCount,
         ammoCount: ammo.length,
         totalRoundCount: ammo.reduce(
           (accumulator, current) => accumulator + current.roundCount,
           0,
         ),
-        totalGunCost: guns.reduce(
-          (accumulator, current) =>
-            accumulator + parseFloat(current.purchasePrice),
-          0,
-        ),
-        totalAmmoCost: ammo.reduce(
-          (accumulator, current) =>
-            accumulator + parseFloat(current.purchasePrice),
-          0,
-        ),
+        totalGunCost,
+        totalAmmoCost,
+        totalInvestment: totalGunCost + totalAmmoCost,
       };
     } catch (error) {
       console.log(error);
