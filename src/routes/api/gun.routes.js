@@ -26,6 +26,9 @@ const router = express.Router();
  *   "purchaseDate": "2021-08-30",
  *   "buyer": "John Doe",
  *   "salePrice": 400,
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "saleDate": "2021-08-30",
  *   "picture": "",
  *   "userId": 1
@@ -61,6 +64,9 @@ router.get('/images/:id/', GunController.readImages);
  *   "purchaseDate": "2021-08-30",
  *   "buyer": "John Doe",
  *   "salePrice": 400,
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "saleDate": "2021-08-30",
  *   "picture": "",
  *   "userId": 1
@@ -95,6 +101,9 @@ router.get('/images/:id/:type', GunController.readForImage);
  *   "purchaseDate": "2021-08-30",
  *   "buyer": "John Doe",
  *   "salePrice": 400,
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "saleDate": "2021-08-30",
  *   "picture": "",
  *   "userId": 1
@@ -164,6 +173,9 @@ router.put('/images/:id', GunController.updateImages);
  *   "buyer": "John Doe",
  *   "salePrice": 400,
  *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "picture": "",
  *   "userId": 1
  * }
@@ -185,6 +197,9 @@ router.put('/images/:id', GunController.updateImages);
  *   "buyer": "John Doe",
  *   "salePrice": 400,
  *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "picture": "",
  *   "userId": 1
  * }
@@ -217,6 +232,9 @@ router.put('/:id', GunController.update);
  *   "buyer": "John Doe",
  *   "salePrice": 400,
  *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "picture": "",
  *   "userId": 1
  * }
@@ -238,6 +256,9 @@ router.put('/:id', GunController.update);
  *   "buyer": "John Doe",
  *   "salePrice": 400,
  *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "picture": "",
  *   "userId": 1
  * }
@@ -269,6 +290,9 @@ router.post('/', GunController.create);
  *   "buyer": "John Doe",
  *   "salePrice": 400,
  *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
  *   "picture": "",
  *   "userId": 1
  * }]

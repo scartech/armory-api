@@ -228,6 +228,9 @@ describe('PUT /api/guns/:id', () => {
       buyer: faker.name.findName(),
       salePrice: faker.finance.amount(),
       saleDate: faker.date.past(),
+      country: faker.name.findName(),
+      estimatedValue: faker.finance.amount(),
+      notes: faker.company.companyName(),
     };
 
     request(app)
@@ -255,6 +258,10 @@ describe('PUT /api/guns/:id', () => {
       buyer: faker.name.findName(),
       salePrice: faker.finance.amount(),
       saleDate: faker.date.past(),
+      country: faker.name.findName(),
+      estimatedValue: faker.finance.amount(),
+      notes: faker.company.companyName(),
+      rating: faker.datatype.number(5),
     };
 
     const res = await request(app)
@@ -275,6 +282,10 @@ describe('PUT /api/guns/:id', () => {
     expect(res.body.purchasePrice).toBe(values.purchasePrice);
     expect(res.body.buyer).toBe(values.buyer);
     expect(res.body.salePrice).toBe(values.salePrice);
+    expect(res.body.country).toBe(values.country);
+    expect(res.body.estimatedValue).toBe(values.estimatedValue);
+    expect(res.body.notes).toBe(values.notes);
+    expect(res.body.rating).toBe(values.rating);
   });
 });
 
@@ -298,6 +309,10 @@ describe('POST /api/guns/:id', () => {
       buyer: faker.name.findName(),
       salePrice: faker.finance.amount(),
       saleDate: faker.date.past(),
+      country: faker.name.findName(),
+      estimatedValue: faker.finance.amount(),
+      notes: faker.company.companyName(),
+      rating: faker.datatype.number(5),
     };
 
     request(app)

@@ -30,6 +30,9 @@ class GunService {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       } = values;
 
       return await Gun.create({
@@ -48,6 +51,9 @@ class GunService {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
         userId: userId,
       });
     } catch (error) {
@@ -187,6 +193,9 @@ class GunService {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       } = values;
 
       return await gun.update({
@@ -205,6 +214,9 @@ class GunService {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       });
     } catch (error) {
       throw error;

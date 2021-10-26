@@ -28,6 +28,9 @@ class GunController {
       saleDate,
       ffl,
       rating,
+      country,
+      estimatedValue,
+      notes,
     } = req.body;
 
     try {
@@ -47,6 +50,9 @@ class GunController {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       });
 
       if (gun) {
@@ -220,6 +226,9 @@ class GunController {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       } = req.body;
 
       const updatedGun = await GunService.update(id, {
@@ -238,6 +247,9 @@ class GunController {
         saleDate,
         ffl,
         rating,
+        country,
+        estimatedValue,
+        notes,
       });
 
       if (updatedGun) {

@@ -17,6 +17,10 @@ class GunFixtures {
       buyer: faker.name.findName(),
       salePrice: faker.finance.amount(),
       saleDate: faker.date.past(),
+      country: faker.name.findName(),
+      estimatedValue: faker.finance.amount(),
+      notes: faker.company.companyName(),
+      rating: faker.datatype.number(5),
       userId: userId,
     });
   }

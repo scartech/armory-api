@@ -24,6 +24,9 @@ const db = require('../config/db.config');
  * @property {string} serialImage - URL or base64 image data of the serial number of the gun
  * @property {string} receiptImage - URL or base64 image data of the receipt for the gun
  * @property {number} rating - Rating for the gun (0 - 5 in 0.5 increments)
+ * @property {number} estimatedValue - Estimated value of the gun
+ * @property {string} country - The gun's country of origin
+ * @property {string} notes - Notes concerning the gun
  * @property {integer} userId.required - ID of the user that owns the gun
  */
 const Gun = db.define(
@@ -66,6 +69,15 @@ const Gun = db.define(
     },
     purchaseDate: {
       type: DataTypes.DATEONLY,
+    },
+    estimatedValue: {
+      type: DataTypes.FLOAT,
+    },
+    country: {
+      type: DataTypes.STRING,
+    },
+    notes: {
+      type: DataTypes.TEXT,
     },
     buyer: {
       type: DataTypes.STRING,
