@@ -62,7 +62,7 @@ const Gun = db.define(
       type: DataTypes.STRING,
     },
     purchasePrice: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.FLOAT,
     },
     purchaseDate: {
       type: DataTypes.DATEONLY,
@@ -71,7 +71,7 @@ const Gun = db.define(
       type: DataTypes.STRING,
     },
     salePrice: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.FLOAT,
     },
     saleDate: {
       type: DataTypes.DATEONLY,
@@ -89,7 +89,7 @@ const Gun = db.define(
       type: DataTypes.TEXT,
     },
     rating: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.FLOAT,
     },
     frontImageSize: {
       type: DataTypes.VIRTUAL,
