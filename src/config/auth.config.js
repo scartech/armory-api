@@ -3,15 +3,17 @@ const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
+const TotpStrategy = require('passport-totp').Strategy;
 
 const JWT_SECRET = require('./jwt.config').JWT_SECRET;
 const User = require('../models/User');
+const TOTP_PERIOD = 30;
 
 /**
  * Handles user login.
  */
 passport.use(
-  'login',
+  'local',
   new LocalStrategy(
     {
       usernameField: 'email',
@@ -47,6 +49,7 @@ passport.use(
  * Verifies that the JWT token is valid.
  */
 passport.use(
+  'jwt',
   new JwtStrategy(
     {
       secretOrKey: `${JWT_SECRET}`,
@@ -65,4 +68,12 @@ passport.use(
       }
     },
   ),
+);
+
+passport.use(
+  'totp',
+  new TotpStrategy((user, done) => {
+    console.log('TOTP SETUP', user);
+    return done(null, user.totpKey, TOTP_PERIOD);
+  }),
 );

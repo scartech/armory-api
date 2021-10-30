@@ -31,7 +31,7 @@ class LoginController {
     }
 
     try {
-      passport.authenticate('login', async (error, user, info) => {
+      passport.authenticate('local', async (error, user) => {
         if (error) {
           return res.status(500).json(new ClientMessage(true, [error.message]));
         }
@@ -48,9 +48,62 @@ class LoginController {
             email: user.email,
             name: user.name,
             role: user.role,
+            usingTotp: user.totpKey !== null,
+            totpLoggedIn: false,
           };
 
-          logger.info(`${user.email} successfully logged in.`);
+          logger.info(
+            `${user.email} successfully logged in using local strategy`,
+          );
+
+          const token = jwt.sign({ user: body }, JWT_SECRET, {
+            expiresIn: '2h',
+          });
+          return res.json({ token });
+        });
+      })(req, res, next);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  static async loginTotp(req, res, next) {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      let messages = [];
+      errors.errors.map((error) => {
+        messages.push(error.msg);
+      });
+      return res.status(400).json(new ClientMessage(true, messages));
+    }
+
+    try {
+      passport.authenticate('totp', async (error, user) => {
+        console.log('error', error);
+        console.log('user', user);
+
+        if (error) {
+          return res.status(500).json(new ClientMessage(true, [error.message]));
+        }
+
+        if (!user) {
+          return res.status(401).send();
+        }
+
+        req.login(user, { session: false }, async (error) => {
+          if (error) return next(error);
+
+          const body = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            usingTotp: true,
+            totpLoggedIn: true,
+          };
+
+          logger.info(`${user.email} successfully logged in using TOTP`);
 
           const token = jwt.sign({ user: body }, JWT_SECRET, {
             expiresIn: '2h',

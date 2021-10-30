@@ -14,7 +14,8 @@ const router = express.Router();
  * {
  *   "id": 3,
  *   "email": "test@noreply.com",
- *   "name": "John Doe"
+ *   "name": "John Doe",
+ *   "totpKeyEnabled": true
  * }
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 400 - Invalid ID
@@ -22,6 +23,45 @@ const router = express.Router();
  * @return {ClientMessage} 500 - A server error occurred
  */
 router.get('/', ProfileController.read);
+
+/**
+ * GET /api/profile/totp
+ * @tags Profile
+ * @summary Create a new TOTP key.
+ * @security BearerAuth
+ * @return {array<object>} 200 - success
+ * @example response - 200 - Key
+ * {
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "totpKeyEnabled": true
+ * }
+ * @return 401 - Invalid or missing JWT
+ */
+router.post('/totp', ProfileController.refreshTotp);
+
+/**
+ * GET /api/profile/validatetotp
+ * @tags Profile
+ * @summary Validate a TOTP token.
+ * @security BearerAuth
+ * @param {object} request.body.required - Token
+ * @example request - Existing User
+ * {
+ *   "code": "123456"
+ * }
+ * @return {object} 200 - User who validated TOTP code
+ * @example response - 200 - Updated User
+ * {
+ *   "id": 3,
+ *   "email": "test@noreply.com",
+ *   "name": "John Doe",
+ *   "totpKeyEnabled": true
+ * }
+ * @return 401 - Invalid or missing JWT
+ */
+router.post('/validatetotp', ProfileController.validateTotp);
 
 /**
  * PUT /api/profile
@@ -32,14 +72,16 @@ router.get('/', ProfileController.read);
  * @example request - Existing User
  * {
  *   "email": "test@noreply.com",
- *   "name": "John Doe"
+ *   "name": "John Doe",
+ *   "totpKeyEnabled": true
  * }
  * @return {object} 200 - Updated an existing user
  * @example response - 200 - Updated User
  * {
  *   "id": 3,
  *   "email": "test@noreply.com",
- *   "name": "John Doe"
+ *   "name": "John Doe",
+ *   "totpKeyEnabled": true
  * }
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 400 - Invalid ID

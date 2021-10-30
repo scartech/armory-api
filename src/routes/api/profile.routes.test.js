@@ -62,6 +62,26 @@ afterAll((done) => {
   DBConfig.close().then(done).catch(done);
 });
 
+describe('POST /api/profile/totpkey', () => {
+  it('should require authentication', (done) => {
+    request(app).post('/api/profile/totp').expect(401, done);
+  });
+
+  it('should respond with a 32 digit key', async () => {
+    const user = users[0];
+    const userToken = UserFixtures.createJWTForUser(user);
+
+    const res = await request(app)
+      .post('/api/profile/totp')
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(res.body.totpKey).toHaveLength(32);
+  });
+});
+
 describe('GET /api/profile', () => {
   it('should require authentication', (done) => {
     request(app).get('/api/profile').expect(401, done);

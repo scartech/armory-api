@@ -8,6 +8,50 @@ const { validationResult } = require('express-validator');
  */
 class ProfileController {
   /**
+   * Creates a new random TOTP key value for the user.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async refreshTotp(req, res) {
+    const { id } = req.user;
+
+    try {
+      const user = await ProfileService.refreshTotp(id);
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
+   * Validates a TOTP code for a user.
+   *
+   * @param {*} req
+   * @param {*} res
+   */
+  static async validateTotp(req, res) {
+    const { id } = req.user;
+    const { code } = req.body;
+
+    try {
+      const validated = await ProfileService.validateTotp(id, code);
+      if (validated) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(400);
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
    * Fetches a User for an ID.
    *
    * @param {*} req
@@ -25,7 +69,7 @@ class ProfileController {
         res.status(404).json(new ClientMessage(true, ['Not found']));
       }
     } catch (error) {
-      console.log('ERROR ' + error.message);
+      console.log('error', error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
@@ -52,10 +96,12 @@ class ProfileController {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
       }
 
-      const { email, name } = req.body;
+      const { email, name, totpEnabled, totpKey } = req.body;
       const updatedUser = await ProfileService.update(id, {
         email,
         name,
+        totpEnabled,
+        totpKey,
       });
 
       if (updatedUser) {

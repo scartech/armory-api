@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { DataTypes } = require('sequelize');
+const base32 = require('thirty-two');
 const db = require('../config/db.config');
 
 /**
@@ -11,6 +12,10 @@ const db = require('../config/db.config');
  * @property {string} role.required - Role - currently only ADMIN or USER
  * @property {boolean} enabled.required - Is the user account enabled?
  * @property {string} password.required - Password - password
+ * @property {boolean} totpEnabled - Is MFA enabled for the user
+ * @property {boolean} totpValidated - Has the user validated a TOTP token
+ * @property {string} totpKey - Unique key for the user to generate TOTP tokens
+ * @property {string} totpUrl - URL for the user's TOTP key for adding to a TOTP App (Authy, etc)
  * @property {array<Gun>} guns - The user's guns
  */
 const User = db.define(
@@ -45,6 +50,15 @@ const User = db.define(
         notEmpty: true,
       },
     },
+    totpEnabled: {
+      type: DataTypes.BOOLEAN,
+    },
+    totpValidated: {
+      type: DataTypes.BOOLEAN,
+    },
+    totpKey: {
+      type: DataTypes.TEXT,
+    },
     role: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -54,6 +68,14 @@ const User = db.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    totpUrl: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.totpKey
+          ? `otpauth://totp/Armory?secret=${base32.encode(this.totpKey)}`
+          : '';
+      },
     },
   },
   {

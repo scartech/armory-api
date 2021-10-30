@@ -11,6 +11,9 @@ class UserFixtures {
       password: hashedPassword,
       role,
       enabled,
+      totpEnabled: false,
+      totpValidated: false,
+      totpKey: faker.datatype.string(30),
     });
   }
 

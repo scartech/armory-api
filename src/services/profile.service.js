@@ -1,9 +1,61 @@
+const generator = require('generate-password');
+const notp = require('notp');
 const { User } = require('../models');
 
 /**
  * Service class for user profile self-service ops.
  */
 class ProfileService {
+  /**
+   * Creates a new TOTP key value for the user.
+   *
+   * @param {*} id
+   * @returns
+   */
+  static async refreshTotp(id) {
+    try {
+      const user = await ProfileService.read(id);
+      if (!user) {
+        throw new Error('User does not exist.');
+      }
+
+      user.totpKey = generator.generate({
+        length: 32,
+      });
+      user.totpValidated = false;
+
+      return await user.save({ fields: ['totpKey', 'totpValidated'] });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a new TOTP key value for the user.
+   *
+   * @param {*} id
+   * @param (*) code
+   * @returns
+   */
+  static async validateTotp(id, code) {
+    try {
+      const user = await ProfileService.read(id);
+      if (!user) {
+        throw new Error('User does not exist.');
+      }
+
+      if (!notp.totp.verify(code, user.totpKey)) {
+        throw new Error('Invalid code');
+      }
+
+      user.totpValidated = true;
+
+      return await user.save({ fields: ['totpValidated'] });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * Reads a single user from the DB.
    *
@@ -13,7 +65,15 @@ class ProfileService {
   static async read(id) {
     try {
       return await User.findByPk(id, {
-        attributes: ['name', 'email', 'id'],
+        attributes: [
+          'name',
+          'email',
+          'totpEnabled',
+          'totpValidated',
+          'totpUrl',
+          'id',
+          'totpKey',
+        ],
         include: ['guns'],
       });
     } catch (error) {
@@ -52,7 +112,7 @@ class ProfileService {
    */
   static async update(id, values) {
     try {
-      const { email, name } = values;
+      const { email, name, totpEnabled } = values;
       const user = await ProfileService.read(id);
 
       if (!user) {
@@ -61,8 +121,11 @@ class ProfileService {
 
       user.email = email;
       user.name = name;
+      user.totpEnabled = totpEnabled;
 
-      return await user.save({ fields: ['email', 'name'] });
+      return await user.save({
+        fields: ['email', 'name', 'totpEnabled'],
+      });
     } catch (error) {
       throw error;
     }
