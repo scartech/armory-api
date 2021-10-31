@@ -73,7 +73,6 @@ passport.use(
 passport.use(
   'totp',
   new TotpStrategy((user, done) => {
-    console.log('TOTP SETUP', user);
     return done(null, user.totpKey, TOTP_PERIOD);
   }),
 );

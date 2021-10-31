@@ -6,6 +6,7 @@ const { validationResult } = require('express-validator');
 
 const { JWT_SECRET } = require('../config/');
 const { ClientMessage } = require('../utils');
+const { User } = require('../models');
 
 /**
  * Handles HTTP login requests.
@@ -48,7 +49,8 @@ class LoginController {
             email: user.email,
             name: user.name,
             role: user.role,
-            usingTotp: user.totpKey !== null,
+            totpValidated: user.totpValidated,
+            totpEnabled: user.totpEnabled,
             totpLoggedIn: false,
           };
 
@@ -78,11 +80,13 @@ class LoginController {
       return res.status(400).json(new ClientMessage(true, messages));
     }
 
+    // Set the request user here instead of storing it in session. It's only needed when loggin in.
+    const { userId } = req.body;
+    const user = await User.findByPk(userId);
+    req.user = user;
+
     try {
       passport.authenticate('totp', async (error, user) => {
-        console.log('error', error);
-        console.log('user', user);
-
         if (error) {
           return res.status(500).json(new ClientMessage(true, [error.message]));
         }
@@ -99,7 +103,8 @@ class LoginController {
             email: user.email,
             name: user.name,
             role: user.role,
-            usingTotp: true,
+            totpValidated: user.totpValidated,
+            totpEnabled: user.totpEnabled,
             totpLoggedIn: true,
           };
 

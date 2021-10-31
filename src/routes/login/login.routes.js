@@ -17,11 +17,8 @@ router.post(
 // Login TOTP
 router.post(
   '/totp',
-  [
-    check('code', 'Invalid email address.').isEmail().trim(),
-    check('password', 'Password is required.').not().isEmpty().trim(),
-  ],
-  LoginController.login,
+  [check('code', 'Invalid verification code.').not().isEmpty().trim()],
+  LoginController.loginTotp,
 );
 
 module.exports = router;
