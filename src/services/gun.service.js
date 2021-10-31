@@ -98,6 +98,7 @@ class GunService {
         backImage: gun.backImage,
         serialImage: gun.serialImage,
         receiptImage: gun.receiptImage,
+        name: gun.name,
       };
     } catch (error) {
       throw error;
