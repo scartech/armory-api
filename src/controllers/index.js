@@ -6,4 +6,5 @@ module.exports = {
   ProfileController: require('./profile.controller'),
   AmmoController: require('./ammo.controller'),
   DashboardController: require('./dashboard.controller'),
+  InventoryController: require('./inventory.controller'),
 };

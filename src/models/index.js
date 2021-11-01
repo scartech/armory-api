@@ -2,6 +2,7 @@ History = require('./History');
 Gun = require('./Gun');
 User = require('./User');
 Ammo = require('./Ammo');
+Inventory = require('./Inventory');
 
 // Create model associations
 User.hasMany(Gun, {
@@ -37,6 +38,19 @@ Ammo.belongsTo(User, {
   },
 });
 
+User.hasMany(Inventory, {
+  as: 'inventory',
+  foreignKey: {
+    name: 'userId',
+  },
+});
+
+Inventory.belongsTo(User, {
+  foreignKey: {
+    name: 'userId',
+  },
+});
+
 History.belongsTo(Gun, {
   foreignKey: {
     name: 'gunId',
@@ -48,4 +62,5 @@ module.exports = {
   History,
   User,
   Ammo,
+  Inventory,
 };

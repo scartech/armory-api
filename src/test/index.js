@@ -3,4 +3,5 @@ module.exports = {
   UserFixtures: require('./user.fixtures'),
   HistoryFixtures: require('./history.fixtures'),
   AmmoFixtures: require('./ammo.fixtures'),
+  InventoryFixtures: require('./inventory.fixtures'),
 };

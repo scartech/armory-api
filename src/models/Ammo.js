@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const db = require('../config/db.config');
 
 /**
- * Gun model
+ * Ammo purchase model
  * @typedef {object} Ammo
  * @property {integer} id.required - ID
  * @property {string} name - A user defined name
