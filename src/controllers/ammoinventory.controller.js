@@ -1,10 +1,10 @@
-const { InventoryService } = require('../services/');
+const { AmmoInventoryService } = require('../services');
 const ClientMessage = require('../utils/ClientMessage');
 
 /**
  * Handles HTTP requests for the Inventory model.
  */
-class InventoryController {
+class AmmoInventoryController {
   /**
    * Creates new inventory entry.
    *
@@ -12,13 +12,13 @@ class InventoryController {
    * @param {*} res
    */
   static async create(req, res) {
-    const { name, type, count, goal } = req.body;
+    const { caliber, brand, name, goal } = req.body;
 
     try {
-      const inventory = await InventoryService.create(req.user.id, {
+      const inventory = await AmmoInventoryService.create(req.user.id, {
+        brand,
         name,
-        type,
-        count,
+        caliber,
         goal,
       });
 
@@ -50,7 +50,7 @@ class InventoryController {
     }
 
     try {
-      const inventory = await InventoryService.read(id);
+      const inventory = await AmmoInventoryService.read(id);
       if (inventory) {
         if (inventory.userId !== userId) {
           return res.status(401).send();
@@ -83,7 +83,7 @@ class InventoryController {
     }
 
     try {
-      const inventory = await InventoryService.read(id);
+      const inventory = await AmmoInventoryService.read(id);
       if (!inventory) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
       }
@@ -92,12 +92,12 @@ class InventoryController {
         return res.status(401).send();
       }
 
-      const { name, type, count, goal } = req.body;
+      const { caliber, brand, name, goal } = req.body;
 
-      const updatedInventory = await InventoryService.update(id, {
+      const updatedInventory = await AmmoInventoryService.update(id, {
+        caliber,
+        brand,
         name,
-        type,
-        count,
         goal,
       });
 
@@ -129,7 +129,7 @@ class InventoryController {
     }
 
     try {
-      const inventory = await InventoryService.read(id);
+      const inventory = await AmmoInventoryService.read(id);
       if (!inventory) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
       }
@@ -138,7 +138,7 @@ class InventoryController {
         return res.status(401).send();
       }
 
-      const success = await InventoryService.delete(id);
+      const success = await AmmoInventoryService.delete(id);
       if (success) {
         res.status(200).send();
       } else {
@@ -158,7 +158,7 @@ class InventoryController {
    */
   static async all(req, res) {
     try {
-      const inventory = await InventoryService.all(req.user.id);
+      const inventory = await AmmoInventoryService.all(req.user.id);
       if (inventory) {
         res.status(200).json(inventory);
       } else {
@@ -170,4 +170,4 @@ class InventoryController {
   }
 }
 
-module.exports = InventoryController;
+module.exports = AmmoInventoryController;

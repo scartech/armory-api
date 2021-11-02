@@ -1,11 +1,11 @@
 const express = require('express');
-const { InventoryController } = require('../../controllers');
+const { AmmoInventoryController } = require('../../controllers');
 
 const router = express.Router();
 
 /**
  * GET /api/inventory/{id}
- * @tags Inventory
+ * @tags Ammo Inventory
  * @summary Gets inventory by ID
  * @security BearerAuth
  * @param {integer} id.path - Inventory ID
@@ -13,8 +13,7 @@ const router = express.Router();
  * @example response - 200 - Existing Inventory
  * {
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
+ *   "caliber": "9mm",
  *   "count": 250,
  *   "goal": 1000,
  *   "userId": 1
@@ -24,11 +23,11 @@ const router = express.Router();
  * @return {ClientMessage} 404 - The inventory was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.get('/:id', InventoryController.read);
+router.get('/:id', AmmoInventoryController.read);
 
 /**
  * DELETE /api/inventory/{id}
- * @tags Inventory
+ * @tags Ammo Inventory
  * @summary Deletes inventory by ID
  * @security BearerAuth
  * @param {integer} id.path - Inventory ID
@@ -38,11 +37,11 @@ router.get('/:id', InventoryController.read);
  * @return {ClientMessage} 404 - The inventory was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.delete('/:id', InventoryController.delete);
+router.delete('/:id', AmmoInventoryController.delete);
 
 /**
  * PUT /api/inventory/{id}
- * @tags Inventory
+ * @tags Ammo Inventory
  * @summary Updates inventory
  * @security BearerAuth
  * @param {integer} id.path - Inventory ID
@@ -50,9 +49,7 @@ router.delete('/:id', InventoryController.delete);
  * @example request - Existing inventory
  * {
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
- *   "count": 250,
+ *   "caliber": "9mm",
  *   "goal": 1000,
  *   "userId": 1
  * }
@@ -60,8 +57,7 @@ router.delete('/:id', InventoryController.delete);
  * @example response - 200 - Updated inventory
  * {
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
+ *   "caliber": "9mm",
  *   "count": 250,
  *   "goal": 1000,
  *   "userId": 1
@@ -71,20 +67,18 @@ router.delete('/:id', InventoryController.delete);
  * @return {ClientMessage} 404 - The inventory was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.put('/:id', InventoryController.update);
+router.put('/:id', AmmoInventoryController.update);
 
 /**
  * POST /api/inventory
- * @tags Inventory
+ * @tags Ammo Inventory
  * @summary Creates new inventory item
  * @security BearerAuth
  * @param {object} request.body.required - Inventory info
  * @example request - New inventory
  * {
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
- *   "count": 250,
+ *   "caliber": "9mm",
  *   "goal": 1000,
  *   "userId": 1
  * }
@@ -92,8 +86,7 @@ router.put('/:id', InventoryController.update);
  * @example response - 201 - Created inventory
  * {
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
+ *   "caliber": "9mm",
  *   "count": 250,
  *   "goal": 1000,
  *   "userId": 1
@@ -101,19 +94,18 @@ router.put('/:id', InventoryController.update);
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.post('/', InventoryController.create);
+router.post('/', AmmoInventoryController.create);
 
 /**
  * GET /api/inventory
- * @tags Inventory
+ * @tags Ammo Inventory
  * @summary Gets all inventory for the logged in user.
  * @security BearerAuth
  * @return {object} 200 - success
  * @example response - 200 - User's inventory
  * [{
  *   "id": 0,
- *   "name": "9mm",
- *   "type": "AMMO",
+ *   "caliber": "9mm",
  *   "count": 250,
  *   "goal": 1000,
  *   "userId": 1
@@ -121,6 +113,6 @@ router.post('/', InventoryController.create);
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.get('/', InventoryController.all);
+router.get('/', AmmoInventoryController.all);
 
 module.exports = router;

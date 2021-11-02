@@ -1,10 +1,10 @@
 const { Op } = require('sequelize');
-const { Inventory } = require('../models');
+const { AmmoInventory } = require('../models');
 
 /**
  * Service class for Inventory CRUD ops.
  */
-class InventoryService {
+class AmmoInventoryService {
   /**
    * Creates new inventory item for a given user.
    *
@@ -14,12 +14,12 @@ class InventoryService {
    */
   static async create(userId, values) {
     try {
-      const { name, type, count, goal } = values;
+      const { caliber, brand, name, goal } = values;
 
-      return await Inventory.create({
+      return await AmmoInventory.create({
+        caliber,
+        brand,
         name,
-        type,
-        count,
         goal,
         userId: userId,
       });
@@ -36,7 +36,7 @@ class InventoryService {
    */
   static async read(id) {
     try {
-      return await Inventory.findByPk(id);
+      return await AmmoInventory.findByPk(id);
     } catch (error) {
       throw error;
     }
@@ -50,13 +50,13 @@ class InventoryService {
    */
   static async all(userId) {
     try {
-      return await Inventory.findAll({
+      return await AmmoInventory.findAll({
         where: {
           userId: {
             [Op.eq]: userId,
           },
         },
-        order: [['name', 'DESC']],
+        order: [['caliber', 'DESC']],
       });
     } catch (error) {
       throw error;
@@ -72,17 +72,17 @@ class InventoryService {
    */
   static async update(id, values) {
     try {
-      const inventory = await Inventory.findByPk(id);
+      const inventory = await AmmoInventory.findByPk(id);
       if (!inventory) {
         throw new Error('Inventory not found.');
       }
 
-      const { name, type, count, goal } = values;
+      const { caliber, brand, name, goal } = values;
 
       return await inventory.update({
+        caliber,
+        brand,
         name,
-        type,
-        count,
         goal,
       });
     } catch (error) {
@@ -98,7 +98,7 @@ class InventoryService {
    */
   static async delete(id) {
     try {
-      const inventory = await Inventory.findByPk(id);
+      const inventory = await AmmoInventory.findByPk(id);
       if (!inventory) {
         throw new Error('Inventory not found.');
       }
@@ -110,4 +110,4 @@ class InventoryService {
   }
 }
 
-module.exports = InventoryService;
+module.exports = AmmoInventoryService;

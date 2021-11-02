@@ -224,10 +224,10 @@ describe('PUT /api/inventory/:id', () => {
     const theInventory = inventories[1];
 
     const values = {
-      name: faker.hacker.verb(),
-      type: faker.company.bsBuzz(),
-      count: faker.datatype.number(),
+      brand: faker.hacker.verb(),
+      caliber: faker.company.bsBuzz(),
       goal: faker.datatype.number(),
+      name: faker.hacker.verb(),
     };
 
     request(app)
@@ -245,10 +245,10 @@ describe('PUT /api/inventory/:id', () => {
     const theInventory = inventories[5];
 
     const values = {
-      name: faker.hacker.verb(),
-      type: faker.company.bsBuzz(),
-      count: faker.datatype.number(),
+      brand: faker.hacker.verb(),
+      caliber: faker.company.bsBuzz(),
       goal: faker.datatype.number(),
+      name: faker.hacker.verb(),
     };
 
     const res = await request(app)
@@ -261,9 +261,9 @@ describe('PUT /api/inventory/:id', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
+    expect(res.body.caliber).toBe(values.caliber);
+    expect(res.body.brand).toBe(values.brand);
     expect(res.body.name).toBe(values.name);
-    expect(res.body.type).toBe(values.type);
-    expect(res.body.count).toBe(values.count);
     expect(res.body.goal).toBe(values.goal);
   });
 });
@@ -275,9 +275,9 @@ describe('POST /api/inventory/:id', () => {
 
   it('should create inventory', (done) => {
     const values = {
+      brand: faker.hacker.verb(),
       name: faker.hacker.verb(),
-      type: faker.company.bsBuzz(),
-      count: faker.datatype.number(),
+      caliber: faker.company.bsBuzz(),
       goal: faker.datatype.number(),
     };
 

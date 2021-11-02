@@ -5,5 +5,5 @@ module.exports = {
   HistoryService: require('./history.service'),
   AmmoService: require('./ammo.service'),
   DashboardService: require('./dashboard.service'),
-  InventoryService: require('./inventory.service'),
+  AmmoInventoryService: require('./ammoinventory.service'),
 };

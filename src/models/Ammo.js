@@ -59,6 +59,9 @@ const Ammo = db.define(
     pricePerRound: {
       type: DataTypes.DECIMAL,
     },
+    addedToInventory: {
+      type: DataTypes.BOOLEAN,
+    },
   },
   {
     underscored: true,

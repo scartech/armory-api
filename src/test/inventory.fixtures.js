@@ -2,11 +2,11 @@ const faker = require('faker');
 
 class InventoryFixtures {
   static async create(userId) {
-    return await Inventory.create({
-      name: faker.hacker.verb(),
-      type: faker.company.bsBuzz(),
-      count: faker.datatype.number(),
+    return await AmmoInventory.create({
+      caliber: faker.hacker.verb(),
+      brand: faker.company.bsBuzz(),
       goal: faker.datatype.number(),
+      name: faker.hacker.phrase(),
       userId: userId,
     });
   }
