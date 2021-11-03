@@ -38,6 +38,19 @@ Ammo.belongsTo(User, {
   },
 });
 
+AmmoInventory.hasMany(Ammo, {
+  as: 'ammo',
+  foreignKey: {
+    name: 'inventoryId',
+  },
+});
+
+Ammo.belongsTo(AmmoInventory, {
+  foreignKey: {
+    name: 'inventoryId',
+  },
+});
+
 User.hasMany(AmmoInventory, {
   as: 'ammoInventory',
   foreignKey: {

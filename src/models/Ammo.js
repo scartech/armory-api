@@ -17,6 +17,7 @@ const db = require('../config/db.config');
  * @property {number} roundCount - How many rounds were purchased
  * @property {number} pricePerRound - Cost per round
  * @property {integer} userId.required - ID of the user that owns the gun
+ * @property {integer} inventoryId - ID of the inventory item this ammo belongs to
  */
 const Ammo = db.define(
   'Ammo',
@@ -58,9 +59,6 @@ const Ammo = db.define(
     },
     pricePerRound: {
       type: DataTypes.DECIMAL,
-    },
-    addedToInventory: {
-      type: DataTypes.BOOLEAN,
     },
   },
   {

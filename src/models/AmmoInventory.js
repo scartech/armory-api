@@ -32,7 +32,20 @@ const AmmoInventory = db.define(
       allowNull: false,
     },
     count: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.VIRTUAL,
+      get() {
+        if (!this.ammo) {
+          return 0;
+        }
+
+        return this.ammo.reduce(
+          (value, { roundCount }) => value + roundCount,
+          0,
+        );
+      },
+      set(value) {
+        throw new Error('Do not try setting the count value');
+      },
     },
     goal: {
       type: DataTypes.INTEGER,

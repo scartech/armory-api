@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { Ammo } = require('../models');
+const AmmoInventoryService = require('./ammoinventory.service');
 
 /**
  * Service class for Ammo CRUD ops.
@@ -28,6 +29,37 @@ class AmmoService {
         pricePerRound,
       } = values;
 
+      const exists = await AmmoInventoryService.exists(
+        caliber,
+        brand,
+        name,
+        userId,
+      );
+
+      let inventory;
+      if (!exists) {
+        inventory = await AmmoInventoryService.create(userId, {
+          name,
+          brand,
+          caliber,
+        });
+
+        if (!inventory) {
+          throw Error('Unable to create inventory item');
+        }
+      } else {
+        inventory = await AmmoInventoryService.existing(
+          caliber,
+          brand,
+          name,
+          userId,
+        );
+
+        if (!inventory) {
+          throw Error('Unable to get inventory item');
+        }
+      }
+
       return await Ammo.create({
         name,
         brand,
@@ -41,6 +73,7 @@ class AmmoService {
         roundCount,
         pricePerRound,
         userId: userId,
+        inventoryId: inventory.id,
       });
     } catch (error) {
       throw error;
@@ -110,6 +143,37 @@ class AmmoService {
         pricePerRound,
       } = values;
 
+      const exists = await AmmoInventoryService.exists(
+        caliber,
+        brand,
+        name,
+        ammo.userId,
+      );
+
+      let inventory;
+      if (!exists) {
+        inventory = await AmmoInventoryService.create(ammo.userId, {
+          name,
+          brand,
+          caliber,
+        });
+
+        if (!inventory) {
+          throw new Error('Unable to create inventory item');
+        }
+      } else {
+        inventory = await AmmoInventoryService.existing(
+          caliber,
+          brand,
+          name,
+          ammo.userId,
+        );
+
+        if (!inventory) {
+          throw new Error('Unable to get inventory item');
+        }
+      }
+
       return await ammo.update({
         name,
         brand,
@@ -122,6 +186,7 @@ class AmmoService {
         purchaseDate,
         roundCount,
         pricePerRound,
+        inventoryId: inventory.id,
       });
     } catch (error) {
       throw error;
