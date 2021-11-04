@@ -4,11 +4,10 @@ const { HistoryController } = require('../../controllers');
 const router = express.Router();
 
 /**
- * GET /api/history/{gunId}/{id}
+ * GET /api/history/{id}
  * @tags History
  * @summary Gets a single history event by ID
  * @security BearerAuth
- * @param {integer} gunId.path - Gun ID
  * @param {integer} id.path - History ID
  * @return {object} 200 - success
  * @example response - 200 - Existing History Event
@@ -23,32 +22,30 @@ const router = express.Router();
  * }
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 400 - Invalid ID
- * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 404 - The history was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.get('/:gunId/:id', HistoryController.read);
+router.get('/:id', HistoryController.read);
 
 /**
- * DELETE /api/history/{gunId}/{id}
+ * DELETE /api/history/{id}
  * @tags History
  * @summary Deletes a history event
  * @security BearerAuth
- * @param {integer} gunId.path - Gun ID
  * @param {integer} id.path - History ID
  * @return 200 - success
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 400 - Invalid ID
- * @return {ClientMessage} 404 - The gun was not found
+ * @return {ClientMessage} 404 - The history was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.delete('/:gunId/:id', HistoryController.delete);
+router.delete('/:id', HistoryController.delete);
 
 /**
- * PUT /api/history/{gunId}/{id}
+ * PUT /api/history/{id}
  * @tags History
  * @summary Updates a history event
  * @security BearerAuth
- * @param {integer} gunId.path - Gun ID
  * @param {integer} id.path - History ID
  * @param {object} request.body.required - Event data
  * @example request - Existing History
@@ -74,13 +71,13 @@ router.delete('/:gunId/:id', HistoryController.delete);
  * }
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 400 - Invalid ID
- * @return {ClientMessage} 404 - The gun or history was not found
+ * @return {ClientMessage} 404 - The history was not found
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.put('/:gunId/:id', HistoryController.update);
+router.put('/:id', HistoryController.update);
 
 /**
- * POST /api/history/{gunId}
+ * POST /api/history
  * @tags History
  * @summary Creates a new history event
  * @security BearerAuth
@@ -108,10 +105,10 @@ router.put('/:gunId/:id', HistoryController.update);
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.post('/:gunId', HistoryController.create);
+router.post('/', HistoryController.create);
 
 /**
- * GET /api/history/{gunId}
+ * GET /api/history/gun/{id}
  * @tags History
  * @summary Gets all history events for a gun
  * @security BearerAuth
@@ -129,6 +126,6 @@ router.post('/:gunId', HistoryController.create);
  * @return 401 - Invalid or missing JWT
  * @return {ClientMessage} 500 - A server error occurred
  */
-router.get('/:gunId', HistoryController.all);
+router.get('/gun/:id', HistoryController.gun);
 
 module.exports = router;

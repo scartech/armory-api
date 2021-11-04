@@ -18,11 +18,27 @@ Gun.belongsTo(User, {
   },
 });
 
-Gun.hasMany(History, {
+User.hasMany(History, {
   as: 'history',
   foreignKey: {
-    name: 'gunId',
+    name: 'userId',
   },
+});
+
+History.belongsTo(User, {
+  foreignKey: {
+    name: 'userId',
+  },
+});
+
+History.belongsToMany(Gun, {
+  as: 'guns',
+  through: 'GunHistory',
+});
+
+Gun.belongsToMany(History, {
+  as: 'history',
+  through: 'GunHistory',
 });
 
 User.hasMany(Ammo, {
@@ -61,12 +77,6 @@ User.hasMany(AmmoInventory, {
 AmmoInventory.belongsTo(User, {
   foreignKey: {
     name: 'userId',
-  },
-});
-
-History.belongsTo(Gun, {
-  foreignKey: {
-    name: 'gunId',
   },
 });
 

@@ -9,7 +9,6 @@ const db = require('../config/db.config');
  * @property {string} type - History type - cleaning or range
  * @property {string} narrative - Text describing the event
  * @property {string} eventDate - The date of the event.
- * @property {integer} gunId.required - ID of the gun
  */
 const History = db.define(
   'History',

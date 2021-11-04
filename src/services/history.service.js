@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
-const { History } = require('../models');
+const GunService = require('./gun.service');
+const { History, User, Gun } = require('../models');
 
 /**
  * Service class for Gun History CRUD ops.
@@ -14,9 +15,12 @@ class HistoryService {
   static async read(id) {
     try {
       return await History.findByPk(id, {
-        attributes: {
-          include: ['gunId'],
-        },
+        include: [
+          {
+            model: Gun,
+            as: 'guns',
+          },
+        ],
       });
     } catch (error) {
       throw error;
@@ -24,24 +28,35 @@ class HistoryService {
   }
 
   /**
-   * Creates a new history entry for a gun.
+   * Creates a new history entry.
    *
-   * @param {integer} gunId
    * @param {object} values
    * @returns
    */
-  static async create(gunId, values) {
+  static async create(values) {
     try {
-      const { name, type, narrative, eventDate, roundCount } = values;
+      const { name, type, narrative, eventDate, roundCount, gunIds } = values;
 
-      return await History.create({
+      const history = await History.create({
         name,
         type,
         narrative,
         eventDate,
         roundCount,
-        gunId: gunId,
       });
+
+      if (!history) {
+        throw new Error('Unable to create history');
+      }
+
+      for (let i = 0; i < gunIds.length; i++) {
+        const gun = await GunService.read(gunIds[i]);
+        if (gun) {
+          await history.addGun(gunIds[i]);
+        }
+      }
+
+      return await HistoryService.read(history.id);
     } catch (error) {
       throw error;
     }
@@ -61,15 +76,28 @@ class HistoryService {
         throw new Error('History not found.');
       }
 
-      const { name, type, narrative, eventDate, roundCount } = values;
+      const { name, type, narrative, eventDate, roundCount, gunIds } = values;
 
-      return await history.update({
+      const updated = await history.update({
         name,
         type,
         narrative,
         eventDate,
         roundCount,
       });
+
+      if (!updated) {
+        throw new Error('Unable to update history');
+      }
+
+      for (let i = 0; i < gunIds.length; i++) {
+        const gun = await GunService.read(gunIds[i]);
+        if (gun) {
+          await updated.addGun(gunIds[i]);
+        }
+      }
+
+      return await HistoryService.read(updated.id);
     } catch (error) {
       throw error;
     }
@@ -78,21 +106,26 @@ class HistoryService {
   /**
    * Reads all history entries for a gun.
    *
-   * @param {*} gunId
+   * @param {*} id
    * @returns
    */
-  static async all(gunId) {
+  static async gun(id) {
     try {
       return await History.findAll({
-        where: {
-          gunId: {
-            [Op.eq]: gunId,
+        through: {
+          where: {
+            gunId: {
+              [Op.eq]: id,
+            },
           },
         },
         order: [['eventDate', 'DESC']],
-        attributes: {
-          include: ['gunId'],
-        },
+        include: [
+          {
+            model: Gun,
+            as: 'guns',
+          },
+        ],
       });
     } catch (error) {
       throw error;

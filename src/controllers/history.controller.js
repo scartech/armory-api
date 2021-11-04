@@ -13,17 +13,17 @@ class HistoryController {
    * @param {*} res
    * @returns
    */
-  static async all(req, res) {
-    const { gunId } = req.params;
+  static async gun(req, res) {
+    const { id } = req.params;
     const userId = req.user.id;
 
-    if (isNaN(gunId)) {
+    if (isNaN(id)) {
       return res
         .status(400)
         .json(new ClientMessage(true, ['Invalid parameter']));
     }
 
-    const gun = await GunService.read(gunId);
+    const gun = await GunService.read(id);
     if (!gun) {
       return res.status(404).json(new ClientMessage(true, ['Gun not found']));
     }
@@ -33,9 +33,9 @@ class HistoryController {
     }
 
     try {
-      const history = await HistoryService.all(gunId);
-      if (history) {
-        res.status(200).json(history);
+      const histories = await HistoryService.gun(id);
+      if (histories) {
+        res.status(200).json(histories);
       } else {
         res.status(404).json(new ClientMessage(true, ['History not found']));
       }
@@ -52,25 +52,16 @@ class HistoryController {
    */
   static async create(req, res) {
     const userId = req.user.id;
-    const { gunId } = req.params;
-    const { name, type, narrative, roundCount, eventDate } = req.body;
-
-    const gun = await GunService.read(gunId);
-    if (!gun) {
-      return res.status(404).json(new ClientMessage(true, ['Not found']));
-    }
-
-    if (gun.userId !== userId) {
-      return res.status(401).send();
-    }
+    const { name, type, narrative, roundCount, eventDate, gunIds } = req.body;
 
     try {
-      const history = await HistoryService.create(gunId, {
+      const history = await HistoryService.create({
         name,
         type,
         narrative,
         eventDate,
         roundCount,
+        gunIds,
       });
 
       if (history) {
@@ -91,23 +82,18 @@ class HistoryController {
    */
   static async update(req, res) {
     const userId = req.user.id;
-    const { gunId, id } = req.params;
-    const { name, type, narrative, roundCount, eventDate } = req.body;
-
-    const gun = await GunService.read(gunId);
-    if (!gun) {
-      return res.status(404).json(new ClientMessage(true, ['Gun not found']));
-    }
-
-    if (gun.userId !== userId) {
-      return res.status(401).send();
-    }
+    const { id } = req.params;
+    const { name, type, narrative, roundCount, eventDate, gunIds } = req.body;
 
     const history = await HistoryService.read(id);
     if (!history) {
       return res
         .status(404)
         .json(new ClientMessage(true, ['History not found']));
+    }
+
+    if (history.userId !== userId) {
+      return res.status(401).send();
     }
 
     try {
@@ -117,6 +103,7 @@ class HistoryController {
         narrative,
         eventDate,
         roundCount,
+        gunIds,
       });
 
       if (updatedHistory) {
@@ -125,7 +112,6 @@ class HistoryController {
         res.status(500).json(new ClientMessage(true, ['Update failed']));
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
@@ -139,7 +125,7 @@ class HistoryController {
    */
   static async read(req, res) {
     const userId = req.user.id;
-    const { gunId, id } = req.params;
+    const { id } = req.params;
 
     if (isNaN(id)) {
       return res
@@ -150,20 +136,7 @@ class HistoryController {
     try {
       const history = await HistoryService.read(id);
       if (history) {
-        if (history.gunId !== parseInt(gunId)) {
-          return res
-            .status(404)
-            .json(new ClientMessage(true, ['History/Gun not found']));
-        }
-
-        const gun = await GunService.read(history.gunId);
-        if (!gun) {
-          return res
-            .status(404)
-            .json(new ClientMessage(true, ['Gun not found']));
-        }
-
-        if (gun.userId !== userId) {
+        if (history.userId !== userId) {
           return res.status(401).send();
         }
 
@@ -187,7 +160,7 @@ class HistoryController {
    */
   static async delete(req, res) {
     const userId = req.user.id;
-    const { gunId, id } = req.params;
+    const { id } = req.params;
 
     if (isNaN(id)) {
       return res
@@ -195,19 +168,14 @@ class HistoryController {
         .json(new ClientMessage(true, ['Invalid parameter']));
     }
 
-    const gun = await GunService.read(gunId);
-    if (!gun) {
-      return res.status(404).json(new ClientMessage(true, ['Not found']));
-    }
-
-    if (gun.userId !== userId) {
-      return res.status(401).send();
-    }
-
     try {
       const history = await HistoryService.read(id);
       if (!history) {
         return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      if (history.userId !== userId) {
+        return res.status(401).send();
       }
 
       const success = await HistoryService.delete(id);
