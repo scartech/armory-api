@@ -2,7 +2,7 @@ const faker = require('faker');
 const passport = require('passport');
 const request = require('supertest');
 const app = require('../../server');
-const { UserFixtures, GunFixtures, HistoryFixtures } = require('../../test');
+const { UserFixtures, HistoryFixtures } = require('../../test');
 const { User } = require('../../models');
 
 const { DBConfig } = require('../../config');
@@ -10,9 +10,7 @@ require('../../models');
 
 const BATCH_SIZE = 10;
 let jwtToken;
-let invalidUserJwtToken;
 let histories = [];
-let user;
 
 // Authentication middlewares
 require('../../config/auth.config');
@@ -20,9 +18,8 @@ app.use(passport.initialize());
 
 beforeAll(async () => {
   histories = await HistoryFixtures.initDatabase(DBConfig, BATCH_SIZE);
-  user = await User.findByPk(1);
+  const user = await User.findByPk(1);
   jwtToken = UserFixtures.createUserJWT(1);
-  invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
 });
 
 afterAll((done) => {
