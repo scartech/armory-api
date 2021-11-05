@@ -1,11 +1,55 @@
 const { validationResult } = require('express-validator');
-const { HistoryService, GunService } = require('../services');
+const {
+  HistoryService,
+  GunService,
+  AmmoInventoryService,
+} = require('../services');
 const ClientMessage = require('../utils/ClientMessage');
 
 /**
  * Handles HTTP requests for the History model.
  */
 class HistoryController {
+  /**
+   * Gets all history entries for an ammo inventory
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async inventory(req, res) {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    if (isNaN(id)) {
+      return res
+        .status(400)
+        .json(new ClientMessage(true, ['Invalid parameter']));
+    }
+
+    const inventory = await AmmoInventoryService.read(id);
+    if (!inventory) {
+      return res
+        .status(404)
+        .json(new ClientMessage(true, ['Inventory not found']));
+    }
+
+    if (inventory.userId !== userId) {
+      return res.status(401).send();
+    }
+
+    try {
+      const histories = await HistoryService.inventory(id);
+      if (histories) {
+        res.status(200).json(histories);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['History not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
   /**
    * Gets all history entries for a gun
    *
@@ -52,7 +96,15 @@ class HistoryController {
    */
   static async create(req, res) {
     const userId = req.user.id;
-    const { name, type, narrative, roundCount, eventDate, gunIds } = req.body;
+    const {
+      name,
+      type,
+      narrative,
+      roundCount,
+      eventDate,
+      gunIds,
+      inventoryIds,
+    } = req.body;
 
     try {
       const history = await HistoryService.create({
@@ -62,6 +114,7 @@ class HistoryController {
         eventDate,
         roundCount,
         gunIds,
+        inventoryIds,
       });
 
       if (history) {
@@ -70,6 +123,7 @@ class HistoryController {
         res.status(500).json(new ClientMessage(true, ['Create failed']));
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
@@ -83,7 +137,15 @@ class HistoryController {
   static async update(req, res) {
     const userId = req.user.id;
     const { id } = req.params;
-    const { name, type, narrative, roundCount, eventDate, gunIds } = req.body;
+    const {
+      name,
+      type,
+      narrative,
+      roundCount,
+      eventDate,
+      gunIds,
+      inventoryIds,
+    } = req.body;
 
     const history = await HistoryService.read(id);
     if (!history) {
@@ -104,6 +166,7 @@ class HistoryController {
         eventDate,
         roundCount,
         gunIds,
+        inventoryIds,
       });
 
       if (updatedHistory) {
@@ -112,6 +175,7 @@ class HistoryController {
         res.status(500).json(new ClientMessage(true, ['Update failed']));
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }

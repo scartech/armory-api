@@ -128,4 +128,25 @@ router.post('/', HistoryController.create);
  */
 router.get('/gun/:id', HistoryController.gun);
 
+/**
+ * GET /api/history/inventory/{id}
+ * @tags History
+ * @summary Gets all history events for a ammo inventory
+ * @security BearerAuth
+ * @return {object} 200 - success
+ * @example response - 200 - History
+ * [{
+ *   "id": 0,
+ *   "name": "Target Practice at PSA",
+ *   "type": "Range Day",
+ *   "narrative": "Shot a lot of rounds",
+ *   "roundCount": 300,
+ *   "eventDate": "2021-08-30",
+ *   "gunId": 1
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/inventory/:id', HistoryController.inventory);
+
 module.exports = router;

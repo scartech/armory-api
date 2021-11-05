@@ -2,7 +2,13 @@ const faker = require('faker');
 const passport = require('passport');
 const request = require('supertest');
 const app = require('../../server');
-const { UserFixtures, HistoryFixtures } = require('../../test');
+const {
+  UserFixtures,
+  HistoryFixtures,
+  GunFixtures,
+  InventoryFixtures,
+} = require('../../test');
+const { HistoryService } = require('../../services');
 const { User } = require('../../models');
 
 const { DBConfig } = require('../../config');
@@ -56,6 +62,40 @@ describe('GET /api/history/:id', () => {
 
     expect(res.body).toBeDefined();
     expect(res.body.id).toEqual(histories[0].id);
+  });
+});
+
+describe('GET /api/history/inventory/:id', () => {
+  it('should require authentication', (done) => {
+    request(app).get('/api/history/inventory/1').expect(401, done);
+  });
+
+  it('should return 404 on non-existent inventory item', (done) => {
+    request(app)
+      .get('/api/history/inventory/888888')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+  });
+
+  it('should return 400 on invalid ID type', (done) => {
+    request(app)
+      .get('/api/history/inventory/abc')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(400, done);
+  });
+
+  it('should respond with history items for a single ammo inventory', async () => {
+    const res = await request(app)
+      .get(`/api/history/inventory/${histories[0].inventory[0].id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toEqual(BATCH_SIZE);
   });
 });
 
@@ -151,7 +191,7 @@ describe('PUT /api/history/:id', () => {
   });
 
   it('should update history', async () => {
-    const history = histories[0];
+    const history = await HistoryService.read(histories[0].id);
 
     const values = {
       name: faker.company.bsBuzz(),
@@ -160,6 +200,7 @@ describe('PUT /api/history/:id', () => {
       type: 'Range Day',
       eventDate: faker.date.past(),
       gunIds: histories[0].guns.map((gun) => gun.id),
+      inventoryIds: histories[0].inventory.map((inv) => inv.id),
     };
 
     const res = await request(app)
@@ -174,6 +215,119 @@ describe('PUT /api/history/:id', () => {
     expect(res.body.roundCount).toBe(values.roundCount);
     expect(res.body.type).toBe(values.type);
     expect(Array.isArray(res.body.guns)).toBe(true);
+    expect(res.body.guns.length).toEqual(values.gunIds.length);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
+  });
+
+  it('should add guns to history', async () => {
+    const history = await HistoryService.read(histories[0].id);
+
+    const values = {
+      name: faker.company.bsBuzz(),
+      narrative: faker.lorem.paragraph(),
+      roundCount: faker.datatype.number(),
+      type: 'Range Day',
+      eventDate: faker.date.past(),
+      gunIds: history.guns.map((gun) => gun.id),
+      inventoryIds: history.inventory.map((inv) => inv.id),
+    };
+
+    const gun = await GunFixtures.createGun(history.userId);
+    values.gunIds.push(gun.id);
+
+    const res = await request(app)
+      .put(`/api/history/${history.id}`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(res.body.guns)).toBe(true);
+    expect(res.body.guns.length).toEqual(values.gunIds.length);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
+  });
+
+  it('should add ammo inventory to history', async () => {
+    const history = await HistoryService.read(histories[0].id);
+
+    const values = {
+      name: faker.company.bsBuzz(),
+      narrative: faker.lorem.paragraph(),
+      roundCount: faker.datatype.number(),
+      type: 'Range Day',
+      eventDate: faker.date.past(),
+      gunIds: history.guns.map((gun) => gun.id),
+      inventoryIds: history.inventory.map((inv) => inv.id),
+    };
+
+    const inventory = await InventoryFixtures.create(history.userId);
+    values.inventoryIds.push(inventory.id);
+
+    const res = await request(app)
+      .put(`/api/history/${history.id}`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(res.body.guns)).toBe(true);
+    expect(Array.isArray(res.body.inventory)).toBe(true);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
+    expect(res.body.guns.length).toEqual(values.gunIds.length);
+  });
+
+  it('should remove guns from history', async () => {
+    const history = await HistoryService.read(histories[0].id);
+
+    const values = {
+      name: faker.company.bsBuzz(),
+      narrative: faker.lorem.paragraph(),
+      roundCount: faker.datatype.number(),
+      type: 'Range Day',
+      eventDate: faker.date.past(),
+      gunIds: history.guns.map((gun) => gun.id),
+      inventoryIds: history.inventory.map((inv) => inv.id),
+    };
+
+    values.gunIds.pop();
+
+    const res = await request(app)
+      .put(`/api/history/${history.id}`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(res.body.guns)).toBe(true);
+    expect(res.body.guns.length).toEqual(values.gunIds.length);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
+  });
+
+  it('should remove ammo inventory from history', async () => {
+    const history = await HistoryService.read(histories[0].id);
+
+    const values = {
+      name: faker.company.bsBuzz(),
+      narrative: faker.lorem.paragraph(),
+      roundCount: faker.datatype.number(),
+      type: 'Range Day',
+      eventDate: faker.date.past(),
+      gunIds: history.guns.map((gun) => gun.id),
+      inventoryIds: history.inventory.map((inv) => inv.id),
+    };
+
+    values.inventoryIds.pop();
+
+    const res = await request(app)
+      .put(`/api/history/${history.id}`)
+      .send(values)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(Array.isArray(res.body.guns)).toBe(true);
+    expect(Array.isArray(res.body.inventory)).toBe(true);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
     expect(res.body.guns.length).toEqual(values.gunIds.length);
   });
 });
@@ -191,6 +345,7 @@ describe('POST /api/history/', () => {
       type: 'Range Day',
       eventDate: faker.date.past(),
       gunIds: histories[0].guns.map((gun) => gun.id),
+      inventoryIds: histories[0].inventory.map((inv) => inv.id),
     };
 
     const res = await request(app)
@@ -206,5 +361,6 @@ describe('POST /api/history/', () => {
     expect(res.body.type).toBe(values.type);
     expect(Array.isArray(res.body.guns)).toBe(true);
     expect(res.body.guns.length).toEqual(values.gunIds.length);
+    expect(res.body.inventory.length).toEqual(values.inventoryIds.length);
   });
 });

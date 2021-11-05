@@ -369,3 +369,54 @@ describe('PUT /api/guns/images/:id', () => {
       .expect(200);
   });
 });
+
+describe('GET /api/guns/caliber/:caliber', () => {
+  it('should require authentication', (done) => {
+    request(app).get('/api/guns/caliber/9mm').expect(401, done);
+  });
+
+  it('should return an empty array for non-existent user', async () => {
+    const res = await request(app)
+      .get('/api/guns/caliber/9mm')
+      .set('Authorization', `Bearer ${invalidUserJwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  it('should respond with empty array for a user with no guns', async () => {
+    const user = await UserFixtures.createUser(
+      faker.name.findName(),
+      faker.internet.email(),
+      faker.internet.password(),
+      'USER',
+      true,
+    );
+    const jwt = UserFixtures.createJWTForUser(user);
+
+    const res = await request(app)
+      .get(`/api/guns/caliber/9mm`)
+      .set('Authorization', `Bearer ${jwt}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  it('should respond with guns', async () => {
+    const res = await request(app)
+      .get(`/api/guns/caliber/${guns[2].caliber}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(1);
+  });
+});

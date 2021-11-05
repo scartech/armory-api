@@ -301,4 +301,38 @@ router.post('/', GunController.create);
  */
 router.get('/', GunController.guns);
 
+/**
+ * GET /api/guns/caliber/{caliber}
+ * @tags Guns
+ * @summary Gets all guns of a specific caliber for the logged in user.
+ * @security BearerAuth
+ * @return {object} 200 - success
+ * @example response - 200 - User's Guns
+ * [{
+ *   "id": 0,
+ *   "name": "Shield",
+ *   "serialNumber": "0000000",
+ *   "modelName": "M&P Shield 2.0",
+ *   "manufacturer": "Smith & Wesson",
+ *   "caliber": "9mm",
+ *   "type": "Pistol",
+ *   "action": "Semi Automatic",
+ *   "dealer": "PSA",
+ *   "ffl": "PSA",
+ *   "purchasePrice": 399,
+ *   "purchaseDate": "2021-08-30",
+ *   "buyer": "John Doe",
+ *   "salePrice": 400,
+ *   "saleDate": "2021-08-30",
+ *   "estimatedValue": 400,
+ *   "country": "United States",
+ *   "notes": "Sample notes",
+ *   "picture": "",
+ *   "userId": 1
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/caliber/:caliber', GunController.gunsForCaliber);
+
 module.exports = router;

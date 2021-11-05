@@ -364,6 +364,29 @@ class GunController {
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
+
+  /**
+   * Gets all guns of a specific caliber for the logged in user.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async gunsForCaliber(req, res) {
+    try {
+      const userId = req.user.id;
+      const { caliber } = req.params;
+
+      const guns = await GunService.gunsForCaliber(caliber, userId);
+      if (guns) {
+        res.status(200).json(guns);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
 }
 
 module.exports = GunController;

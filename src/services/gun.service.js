@@ -144,6 +144,30 @@ class GunService {
   }
 
   /**
+   * Reads all guns that have a specific caliber for a user
+   *
+   * @param {string} caliber - gun caliber
+   * @param {string} userID - owner of the guns
+   */
+  static async gunsForCaliber(caliber, userId) {
+    try {
+      return await Gun.findAll({
+        where: {
+          userId: {
+            [Op.eq]: userId,
+          },
+          caliber: {
+            [Op.eq]: caliber,
+          },
+        },
+        order: [['name', 'ASC']],
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Reads all guns for a single user from the DB.
    *
    * @param {*} userId
