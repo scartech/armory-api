@@ -168,6 +168,33 @@ class AmmoInventoryController {
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
+
+  /**
+   * Gets all inventory of a spcecific caliber for the logged in user.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async allForCaliber(req, res) {
+    try {
+      const userId = req.user.id;
+      const { caliber } = req.params;
+
+      const inventory = await AmmoInventoryService.allForCaliber(
+        userId,
+        caliber,
+      );
+      if (inventory) {
+        res.status(200).json(inventory);
+      } else {
+        res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
 }
 
 module.exports = AmmoInventoryController;

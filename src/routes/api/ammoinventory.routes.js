@@ -115,4 +115,23 @@ router.post('/', AmmoInventoryController.create);
  */
 router.get('/', AmmoInventoryController.all);
 
+/**
+ * GET /api/inventory/caliber/:caliber
+ * @tags Ammo Inventory
+ * @summary Gets all inventory of a specific caliber for the logged in user.
+ * @security BearerAuth
+ * @return {object} 200 - success
+ * @example response - 200 - User's inventory
+ * [{
+ *   "id": 0,
+ *   "caliber": "9mm",
+ *   "count": 250,
+ *   "goal": 1000,
+ *   "userId": 1
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/caliber/:caliber', AmmoInventoryController.allForCaliber);
+
 module.exports = router;

@@ -4,6 +4,57 @@ const { HistoryController } = require('../../controllers');
 const router = express.Router();
 
 /**
+ * GET /api/history/rangedays
+ * @tags History
+ * @summary Gets all history range days
+ * @security BearerAuth
+ * @return {object} 200 - success
+ * @example response - 200 - History
+ * [{
+ *   "id": 0,
+ *   "name": "Target Practice at PSA",
+ *   "type": "Range Day",
+ *   "narrative": "Shot a lot of rounds",
+ *   "roundCount": 300,
+ *   "eventDate": "2021-08-30",
+ *   "gunId": 1
+ * }]
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.get('/rangedays', HistoryController.rangeDays);
+
+/**
+ * POST /api/history/rangeday
+ * @tags History
+ * @summary Creates a new range day history event
+ * @security BearerAuth
+ * @param {object} request.body.required - Event info
+ * @example request - New History Event
+ * {
+ *   "name": "Target Practice at PSA",
+ *   "narrative": "Shot a lot of rounds",
+ *   "roundCount": 300,
+ *   "eventDate": "2021-08-30",
+ *   "gunId": 1
+ * }
+ * @return {object} 201 - Created a new history event
+ * @example response - 201 - Created History
+ *  {
+ *   "id": 0,
+ *   "name": "Target Practice at PSA",
+ *   "type": "Range Day",
+ *   "narrative": "Shot a lot of rounds",
+ *   "roundCount": 300,
+ *   "eventDate": "2021-08-30",
+ *   "gunId": 1
+ * }
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.post('/rangeday', HistoryController.createRangeDay);
+
+/**
  * GET /api/history/{id}
  * @tags History
  * @summary Gets a single history event by ID

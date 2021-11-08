@@ -33,9 +33,8 @@ class HistoryFixtures {
 
     for (let i = 0; i < count; i++) {
       const history = await History.create({
-        name: faker.company.bsBuzz(),
-        narrative: faker.lorem.paragraph(),
-        roundCount: faker.datatype.number(),
+        notes: faker.lorem.paragraph(),
+        location: faker.address.streetAddress(),
         type: 'Range Day',
         eventDate: faker.date.past(),
         userId: user.id,
@@ -59,7 +58,7 @@ class HistoryFixtures {
           },
           {
             model: AmmoInventory,
-            as: 'inventory',
+            as: 'inventories',
           },
         ],
       });

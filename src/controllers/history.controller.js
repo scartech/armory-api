@@ -89,6 +89,46 @@ class HistoryController {
   }
 
   /**
+   * Creates a new range day history item.
+   *
+   * @param {*} req
+   * @param {*} res
+   */
+  static async createRangeDay(req, res) {
+    const userId = req.user.id;
+    const {
+      notes,
+      location,
+      eventDate,
+      gunIds,
+      inventoryIds,
+      gunRoundsFired,
+      inventoryRoundsFired,
+    } = req.body;
+
+    try {
+      const history = await HistoryService.create(userId, {
+        type: 'Range Day',
+        notes,
+        eventDate,
+        location,
+        gunIds,
+        inventoryIds,
+        gunRoundsFired,
+        inventoryRoundsFired,
+      });
+
+      if (history) {
+        res.status(201).json(history);
+      } else {
+        res.status(500).json(new ClientMessage(true, ['Create failed']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
    * Creates a new history item.
    *
    * @param {*} req
@@ -97,24 +137,26 @@ class HistoryController {
   static async create(req, res) {
     const userId = req.user.id;
     const {
-      name,
       type,
-      narrative,
-      roundCount,
+      notes,
+      location,
       eventDate,
       gunIds,
       inventoryIds,
+      gunRoundsFired,
+      inventoryRoundsFired,
     } = req.body;
 
     try {
-      const history = await HistoryService.create({
-        name,
+      const history = await HistoryService.create(userId, {
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
+        location,
         gunIds,
         inventoryIds,
+        gunRoundsFired,
+        inventoryRoundsFired,
       });
 
       if (history) {
@@ -138,13 +180,14 @@ class HistoryController {
     const userId = req.user.id;
     const { id } = req.params;
     const {
-      name,
       type,
-      narrative,
-      roundCount,
+      notes,
+      location,
       eventDate,
       gunIds,
       inventoryIds,
+      gunRoundsFired,
+      inventoryRoundsFired,
     } = req.body;
 
     const history = await HistoryService.read(id);
@@ -159,14 +202,15 @@ class HistoryController {
     }
 
     try {
-      const updatedHistory = await HistoryService.update(id, {
-        name,
+      const updatedHistory = await HistoryService.update(userId, id, {
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
+        location,
         gunIds,
         inventoryIds,
+        gunRoundsFired,
+        inventoryRoundsFired,
       });
 
       if (updatedHistory) {
@@ -250,6 +294,28 @@ class HistoryController {
       }
     } catch (error) {
       res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
+   * Reads all range days for a user.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async rangeDays(req, res) {
+    const userId = req.user.id;
+
+    try {
+      const history = await HistoryService.rangeDays(userId);
+      if (!history) {
+        return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      res.status(200).json(history);
+    } catch (error) {
+      return res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
 }

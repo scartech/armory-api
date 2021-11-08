@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const GunService = require('./gun.service');
 const AmmoInventoryService = require('./ammoinventory.service');
-const { History, User, Gun, AmmoInventory } = require('../models');
+const { History, Gun, AmmoInventory } = require('../models');
 
 /**
  * Service class for Gun History CRUD ops.
@@ -23,7 +23,34 @@ class HistoryService {
           },
           {
             model: AmmoInventory,
-            as: 'inventory',
+            as: 'inventories',
+          },
+        ],
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async rangeDays(userId) {
+    try {
+      return await History.findAll({
+        where: {
+          userId: {
+            [Op.eq]: userId,
+          },
+          type: {
+            [Op.eq]: 'Range Day',
+          },
+        },
+        include: [
+          {
+            model: Gun,
+            as: 'guns',
+          },
+          {
+            model: AmmoInventory,
+            as: 'inventories',
           },
         ],
       });
@@ -38,41 +65,70 @@ class HistoryService {
    * @param {object} values
    * @returns
    */
-  static async create(values) {
+  static async create(userId, values) {
     try {
       const {
-        name,
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
         gunIds,
         inventoryIds,
+        location,
+        gunRoundsFired,
+        inventoryRoundsFired,
       } = values;
 
       const history = await History.create({
-        name,
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
+        location,
+        userId,
       });
 
       if (!history) {
         throw new Error('Unable to create history');
       }
 
-      for (let i = 0; i < gunIds.length; i++) {
-        const gun = await GunService.read(gunIds[i]);
-        if (gun) {
-          await history.addGun(gunIds[i]);
+      if (gunIds) {
+        for (let i = 0; i < gunIds.length; i++) {
+          const gun = await GunService.read(gunIds[i]);
+          if (gun) {
+            if (gun.userId !== userId) {
+              throw new Error('Invalid gun');
+            }
+
+            if (gunRoundsFired && gun.id in gunRoundsFired) {
+              await history.addGun(gun, {
+                through: {
+                  roundCount: gunRoundsFired[gun.id],
+                },
+              });
+            } else {
+              await history.addGun(gun);
+            }
+          }
         }
       }
 
-      for (let i = 0; i < inventoryIds.length; i++) {
-        const inventory = await AmmoInventoryService.read(inventoryIds[i]);
-        if (inventory) {
-          await history.addInventory(inventoryIds[i]);
+      if (inventoryIds) {
+        for (let i = 0; i < inventoryIds.length; i++) {
+          const inventory = await AmmoInventoryService.read(inventoryIds[i]);
+          if (inventory) {
+            if (inventory.userId !== userId) {
+              throw new Error('Invalid inventory');
+            }
+
+            if (inventoryRoundsFired && inventory.id in inventoryRoundsFired) {
+              await history.addInventory(inventory, {
+                through: {
+                  roundCount: inventoryRoundsFired[inventory.id],
+                },
+              });
+            } else {
+              await history.addInventory(inventory);
+            }
+          }
         }
       }
 
@@ -82,6 +138,20 @@ class HistoryService {
     }
   }
 
+  static getMethods(obj) {
+    var result = [];
+    for (var id in obj) {
+      try {
+        if (typeof obj[id] == 'function') {
+          result.push(id + ': ' + obj[id].toString());
+        }
+      } catch (err) {
+        result.push(id + ': inaccessible');
+      }
+    }
+    return result;
+  }
+
   /**
    * Update an existing history item.
    *
@@ -89,63 +159,97 @@ class HistoryService {
    * @param {object} values
    * @returns
    */
-  static async update(id, values) {
+  static async update(userId, id, values) {
     try {
-      const history = await HistoryService.read(id);
+      let history = await HistoryService.read(id);
       if (!history) {
         throw new Error('History not found.');
       }
 
-      const existingGunIds = history.guns.map((x) => x.id);
-      const existingInventoryIds = history.inventory.map((x) => x.id);
+      if (history.userId !== userId) {
+        throw new Error('Access denied');
+      }
 
       const {
-        name,
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
+        location,
         gunIds,
         inventoryIds,
+        gunRoundsFired,
+        inventoryRoundsFired,
       } = values;
 
       const updated = await history.update({
-        name,
         type,
-        narrative,
+        notes,
         eventDate,
-        roundCount,
+        location,
       });
-
-      const gunIdsToRemove = existingGunIds.filter((x) => !gunIds.includes(x));
-      const inventoryIdsToRemove = existingInventoryIds.filter(
-        (x) => !inventoryIds.includes(x),
-      );
 
       if (!updated) {
         throw new Error('Unable to update history');
       }
 
+      history = await HistoryService.read(id);
+      let invIds = history.inventories.map((x) => x.id);
+      let gIds = history.guns.map((x) => x.id);
+
+      for (let i = 0; i < invIds.length; i++) {
+        const inv = await AmmoInventoryService.read(invIds[i]);
+        const removed = await history.removeInventory(inv);
+
+        if (removed === 0) {
+          throw new Error('Failed to remove old AmmoInventory history item.');
+        }
+      }
+
+      for (let i = 0; i < gIds.length; i++) {
+        const gun = await GunService.read(gIds[i]);
+        const removed = await history.removeGun(gun);
+
+        if (removed === 0) {
+          throw new Error('Failed to remove old Gun history item.');
+        }
+      }
+
       for (let i = 0; i < inventoryIds.length; i++) {
         const inventory = await AmmoInventoryService.read(inventoryIds[i]);
         if (inventory) {
-          await updated.addInventory(inventoryIds[i]);
+          if (inventory.userId !== userId) {
+            throw new Error('Invalid inventory');
+          }
+
+          if (inventoryRoundsFired && inventory.id in inventoryRoundsFired) {
+            await history.addInventories(inventory, {
+              through: {
+                roundCount: inventoryRoundsFired[inventory.id],
+              },
+            });
+          } else {
+            await history.addInventories(inventoryIds[i]);
+          }
         }
       }
 
       for (let i = 0; i < gunIds.length; i++) {
         const gun = await GunService.read(gunIds[i]);
         if (gun) {
-          await updated.addGun(gunIds[i]);
+          if (gun.userId !== userId) {
+            throw new Error('Invalid gun');
+          }
+
+          if (gunRoundsFired && gun.id in gunRoundsFired) {
+            await history.addGun(gun, {
+              through: {
+                roundCount: gunRoundsFired[gun.id],
+              },
+            });
+          } else {
+            await history.addGun(gun);
+          }
         }
-      }
-
-      for (let i = 0; i < gunIdsToRemove.length; i++) {
-        await updated.removeGun(gunIdsToRemove[i]);
-      }
-
-      for (let i = 0; i < inventoryIdsToRemove.length; i++) {
-        await updated.removeInventory(inventoryIdsToRemove[i]);
       }
 
       return await HistoryService.read(id);
@@ -163,22 +267,23 @@ class HistoryService {
   static async gun(id) {
     try {
       return await History.findAll({
-        through: {
-          where: {
-            gunId: {
-              [Op.eq]: id,
-            },
-          },
-        },
         order: [['eventDate', 'DESC']],
         include: [
           {
+            required: true,
             model: Gun,
             as: 'guns',
+            through: {
+              where: {
+                gun_id: {
+                  [Op.eq]: id,
+                },
+              },
+            },
           },
           {
             model: AmmoInventory,
-            as: 'inventory',
+            as: 'inventories',
           },
         ],
       });
@@ -196,13 +301,6 @@ class HistoryService {
   static async inventory(id) {
     try {
       return await History.findAll({
-        through: {
-          where: {
-            ammoInventoryId: {
-              [Op.eq]: id,
-            },
-          },
-        },
         order: [['eventDate', 'DESC']],
         include: [
           {
@@ -210,8 +308,16 @@ class HistoryService {
             as: 'guns',
           },
           {
+            required: true,
             model: AmmoInventory,
-            as: 'inventory',
+            as: 'inventories',
+            through: {
+              where: {
+                ammo_inventory_id: {
+                  [Op.eq]: id,
+                },
+              },
+            },
           },
         ],
       });

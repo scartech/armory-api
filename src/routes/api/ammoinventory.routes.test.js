@@ -142,6 +142,60 @@ describe('GET /api/inventory', () => {
   });
 });
 
+describe('GET /api/inventory/caliber/:caliber', () => {
+  it('should require authentication', (done) => {
+    request(app).get('/api/inventory/caliber/9mm').expect(401, done);
+  });
+
+  it('should return an empty array for non-existent user', async () => {
+    const res = await request(app)
+      .get(`/api/inventory/caliber/9mm`)
+      .set('Authorization', `Bearer ${invalidUserJwtToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  it('should respond with empty array for a user with no inventory', async () => {
+    const user = await UserFixtures.createUser(
+      faker.name.findName(),
+      faker.internet.email(),
+      faker.internet.password(),
+      'USER',
+      true,
+    );
+    const jwt = UserFixtures.createJWTForUser(user);
+
+    const res = await request(app)
+      .get(`/api/inventory/caliber/inventories[2].caliber`)
+      .set('Authorization', `Bearer ${jwt}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toEqual(0);
+  });
+
+  it('should respond with inventory', async () => {
+    const res = await request(app)
+      .get(`/api/inventory/caliber/${inventories[3].caliber}`)
+      .set(
+        'Authorization',
+        `Bearer ${UserFixtures.createJWT(inventories[3].userId)}`,
+      )
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(res.body).toBeDefined();
+    expect(Array.isArray(res.body)).toEqual(true);
+    expect(res.body.length).toBeGreaterThan(1);
+  });
+});
+
 describe('GET /api/inventory/:id', () => {
   it('should require authentication', (done) => {
     request(app).get('/api/inventory/1').expect(401, done);

@@ -181,6 +181,7 @@ class GunService {
             [Op.eq]: userId,
           },
         },
+        include: ['history'],
         order: [['name', 'ASC']],
       });
     } catch (error) {

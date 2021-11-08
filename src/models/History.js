@@ -5,10 +5,10 @@ const db = require('../config/db.config');
  * History model
  * @typedef {object} History
  * @property {integer} id.required - ID
- * @property {string} name - A user defined name
  * @property {string} type - History type - cleaning or range
- * @property {string} narrative - Text describing the event
+ * @property {string} notes - Text describing the event
  * @property {string} eventDate - The date of the event.
+ * @property {string} location - Location of the event.
  */
 const History = db.define(
   'History',
@@ -18,20 +18,55 @@ const History = db.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
-    },
     type: {
       type: DataTypes.STRING,
     },
-    narrative: {
-      type: DataTypes.TEXT,
+    location: {
+      type: DataTypes.STRING,
     },
-    roundCount: {
-      type: DataTypes.INTEGER,
+    notes: {
+      type: DataTypes.TEXT,
     },
     eventDate: {
       type: DataTypes.DATEONLY,
+    },
+    ammoUsedCount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let total = 0;
+
+        if (this.inventories) {
+          this.inventories
+            .filter((x) => x.HistoryInventory)
+            .forEach((inv) => {
+              total += inv.HistoryInventory.roundCount;
+            });
+        }
+
+        return total;
+      },
+      set(value) {
+        throw new Error('Do not try setting the count value');
+      },
+    },
+    roundsShotCount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let total = 0;
+
+        if (this.guns) {
+          this.guns
+            .filter((x) => x.HistoryGun)
+            .forEach((inv) => {
+              total += inv.HistoryGun.roundCount;
+            });
+        }
+
+        return total;
+      },
+      set(value) {
+        throw new Error('Do not try setting the count value');
+      },
     },
   },
   {

@@ -36,7 +36,9 @@ class AmmoInventoryService {
    */
   static async read(id) {
     try {
-      return await AmmoInventory.findByPk(id);
+      return await AmmoInventory.findByPk(id, {
+        include: ['ammo', 'history'],
+      });
     } catch (error) {
       throw error;
     }
@@ -100,6 +102,7 @@ class AmmoInventoryService {
             [Op.eq]: userId,
           },
         },
+        include: ['ammo', 'history'],
       });
     } catch (error) {
       throw error;
@@ -120,8 +123,33 @@ class AmmoInventoryService {
             [Op.eq]: userId,
           },
         },
-        include: 'ammo',
+        include: ['ammo', 'history'],
         order: [['caliber', 'DESC']],
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Reads all inventory items for a caliber for a single user from the DB.
+   *
+   * @param {*} userId
+   * @returns
+   */
+  static async allForCaliber(userId, caliber) {
+    try {
+      return await AmmoInventory.findAll({
+        where: {
+          userId: {
+            [Op.eq]: userId,
+          },
+          caliber: {
+            [Op.eq]: caliber,
+          },
+        },
+        include: ['ammo', 'history'],
+        order: [['brand', 'ASC']],
       });
     } catch (error) {
       throw error;
@@ -147,9 +175,11 @@ class AmmoInventoryService {
         throw new Error('Invalid goal value.');
       }
 
-      return await inventory.update({
+      await inventory.update({
         goal,
       });
+
+      return AmmoInventoryService.read(id);
     } catch (error) {
       throw error;
     }
@@ -171,12 +201,14 @@ class AmmoInventoryService {
 
       const { caliber, brand, name, goal } = values;
 
-      return await inventory.update({
+      await inventory.update({
         caliber,
         brand,
         name,
         goal,
       });
+
+      return AmmoInventoryService.read(id);
     } catch (error) {
       throw error;
     }

@@ -2,13 +2,13 @@ const { DataTypes } = require('sequelize');
 const db = require('../config/db.config');
 
 /**
- * HistoryInventory model
- * @typedef {object} HistoryInventory
+ * HistoryGun model
+ * @typedef {object} HistoryGun
  * @property {integer} id.required - ID
  * @property {string} roundCount - The number of rounds used
  */
-const HistoryInventory = db.define(
-  'HistoryInventory',
+const HistoryGun = db.define(
+  'HistoryGun',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -23,8 +23,8 @@ const HistoryInventory = db.define(
     underscored: true,
     paranoid: false,
     timestamps: false,
-    tableName: 'history_inventory',
+    tableName: 'history_gun',
   },
 );
 
-module.exports = HistoryInventory;
+module.exports = HistoryGun;

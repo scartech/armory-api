@@ -34,14 +34,20 @@ const AmmoInventory = db.define(
     count: {
       type: DataTypes.VIRTUAL,
       get() {
-        if (!this.ammo) {
-          return 0;
+        let total = 0;
+
+        if (this.ammo) {
+          total += this.ammo.reduce(
+            (value, { roundCount }) => value + roundCount,
+            0,
+          );
         }
 
-        return this.ammo.reduce(
-          (value, { roundCount }) => value + roundCount,
-          0,
-        );
+        if (this.history) {
+          // console.log(this.history);
+        }
+
+        return total;
       },
       set(value) {
         throw new Error('Do not try setting the count value');

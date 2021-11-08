@@ -1,6 +1,7 @@
 History = require('./History');
 HistoryInventory = require('./HistoryInventory');
 Gun = require('./Gun');
+HistoryGun = require('./HistoryGun');
 User = require('./User');
 Ammo = require('./Ammo');
 AmmoInventory = require('./AmmoInventory');
@@ -34,16 +35,16 @@ History.belongsTo(User, {
 
 History.belongsToMany(Gun, {
   as: 'guns',
-  through: 'gun_history',
+  through: HistoryGun,
 });
 
 Gun.belongsToMany(History, {
   as: 'history',
-  through: 'gun_history',
+  through: HistoryGun,
 });
 
 History.belongsToMany(AmmoInventory, {
-  as: 'inventory',
+  as: 'inventories',
   through: HistoryInventory,
 });
 

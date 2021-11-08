@@ -1,4 +1,5 @@
 const { DataTypes, Sequelize } = require('sequelize');
+const { parse, isAfter } = require('date-fns');
 const db = require('../config/db.config');
 
 /**
@@ -137,6 +138,56 @@ const Gun = db.define(
       type: DataTypes.VIRTUAL,
       get() {
         return this.receiptImageSize > 100;
+      },
+    },
+    lastShot: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let date = undefined;
+        let text = '';
+
+        if (this.history && this.history.length > 0) {
+          this.history
+            .filter((x) => x.type === 'Range Day')
+            .forEach((his) => {
+              if (his.eventDate) {
+                if (!date) {
+                  date = parse(his.eventDate, 'yyyy-MM-dd', new Date());
+                  text = his.eventDate;
+                } else {
+                  const eventDate = parse(
+                    his.eventDate,
+                    'yyyy-MM-dd',
+                    new Date(),
+                  );
+
+                  if (isAfter(eventDate, date)) {
+                    date = eventDate;
+                    text = his.eventDate;
+                  }
+                }
+              }
+            });
+          return text;
+        }
+
+        return date;
+      },
+    },
+    roundsShotCount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let total = 0;
+
+        if (this.history && this.history.length > 0) {
+          this.history
+            .filter((x) => x.HistoryGun)
+            .forEach((inv) => {
+              total += inv.HistoryGun.roundCount;
+            });
+        }
+
+        return total;
       },
     },
   },
