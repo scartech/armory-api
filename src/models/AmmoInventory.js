@@ -31,7 +31,7 @@ const AmmoInventory = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    count: {
+    totalPurchased: {
       type: DataTypes.VIRTUAL,
       get() {
         let total = 0;
@@ -43,11 +43,47 @@ const AmmoInventory = db.define(
           );
         }
 
-        if (this.history) {
-          // console.log(this.history);
+        return total;
+      },
+    },
+    totalPurchasePrice: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let total = 0.0;
+
+        if (this.ammo) {
+          total += this.ammo.reduce(
+            (value, { purchasePrice }) => value + parseFloat(purchasePrice),
+            0,
+          );
         }
 
         return total;
+      },
+    },
+    totalShot: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let total = 0;
+
+        if (this.history) {
+          const rangeDays = this.history.filter((x) => x.type === 'Range Day');
+          const historyInventories = rangeDays.map((x) => x.HistoryInventory);
+          if (historyInventories.length > 0) {
+            total += historyInventories.reduce(
+              (value, { roundCount }) => value + roundCount,
+              0,
+            );
+          }
+        }
+
+        return total;
+      },
+    },
+    count: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.totalPurchased - this.totalShot;
       },
       set(value) {
         throw new Error('Do not try setting the count value');
