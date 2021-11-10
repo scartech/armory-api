@@ -2,9 +2,11 @@ const faker = require('faker');
 const passport = require('passport');
 const request = require('supertest');
 const app = require('../../server');
+const { AmmoInventory, Ammo } = require('../../models');
 const { UserFixtures, InventoryFixtures } = require('../../test');
 
 const { DBConfig } = require('../../config');
+const AmmoInventoryService = require('../../services/ammoinventory.service');
 require('../../models');
 
 const NUM_USERS = 1;
@@ -256,7 +258,7 @@ describe('DELETE /api/inventory/:id', () => {
 
   it('should delete inventory', (done) => {
     request(app)
-      .delete(`/api/ingentory/${inventories[2].id}`)
+      .delete(`/api/inventory/${inventories[2].id}`)
       .set(
         'Authorization',
         `Bearer ${UserFixtures.createJWT(inventories[2].userId)}`,
@@ -266,6 +268,44 @@ describe('DELETE /api/inventory/:id', () => {
         inventories.splice(0, 1);
         done();
       });
+  });
+
+  it('should fail to delete inventory with count > 0', async () => {
+    const brand = faker.company.companyName();
+    const name = faker.commerce.product();
+    const caliber = faker.hacker.verb();
+
+    const inventory = await AmmoInventory.create({
+      caliber,
+      brand,
+      goal: faker.datatype.number(),
+      name,
+      userId: inventories[0].userId,
+    });
+
+    const ammo = await Ammo.create({
+      weight: faker.hacker.verb(),
+      name,
+      brand,
+      bulletType: faker.company.companyName(),
+      caliber,
+      muzzleVelocity: faker.random.alphaNumeric(10),
+      purchasedFrom: faker.company.companyName(),
+      purchasePrice: faker.finance.amount(),
+      purchaseDate: faker.date.past(),
+      pricePerRound: faker.finance.amount(),
+      roundCount: faker.datatype.number(),
+      userId: inventories[0].userId,
+      inventoryId: inventory.id,
+    });
+
+    await request(app)
+      .delete(`/api/inventory/${inventory.id}`)
+      .set(
+        'Authorization',
+        `Bearer ${UserFixtures.createJWT(inventory.userId)}`,
+      )
+      .expect(500);
   });
 });
 

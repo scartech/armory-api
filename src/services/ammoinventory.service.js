@@ -222,9 +222,19 @@ class AmmoInventoryService {
    */
   static async delete(id) {
     try {
-      const inventory = await AmmoInventory.findByPk(id);
+      const inventory = await AmmoInventoryService.read(id);
       if (!inventory) {
         throw new Error('Inventory not found.');
+      }
+
+      if (
+        inventory.count > 0 ||
+        inventory.totalShot > 0 ||
+        inventory.totalPurchased > 0
+      ) {
+        throw new Error(
+          'Unable to delete inventory that still exists or has been used in the past.',
+        );
       }
 
       return await inventory.destroy();
