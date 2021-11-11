@@ -102,8 +102,6 @@ describe('GET /api/dashboard', () => {
 
     expect(res.body).toBeDefined();
     expect(res.body.gunCount).toEqual(0);
-    expect(res.body.ammoCount).toEqual(0);
-    expect(res.body.totalRoundCount).toEqual(0);
     expect(res.body.totalGunCost).toEqual(0);
     expect(res.body.totalAmmoCost).toEqual(0);
   });
@@ -126,8 +124,6 @@ describe('GET /api/dashboard', () => {
 
     expect(res.body).toBeDefined();
     expect(res.body.gunCount).toEqual(0);
-    expect(res.body.ammoCount).toEqual(0);
-    expect(res.body.totalRoundCount).toEqual(0);
     expect(res.body.totalGunCost).toEqual(0);
     expect(res.body.totalAmmoCost).toEqual(0);
   });
@@ -141,8 +137,6 @@ describe('GET /api/dashboard', () => {
 
     expect(res.body).toBeDefined();
     expect(res.body.gunCount).toBeGreaterThan(0);
-    expect(res.body.ammoCount).toBeGreaterThan(0);
-    expect(res.body.totalRoundCount).toBeGreaterThan(0);
     expect(res.body.totalGunCost).toBeGreaterThan(0);
     expect(res.body.totalAmmoCost).toBeGreaterThan(0);
   });

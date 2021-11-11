@@ -1,4 +1,8 @@
 const { Op } = require('sequelize');
+const AmmoInventoryService = require('./ammoinventory.service');
+const AmmoService = require('./ammo.service');
+const GunService = require('./gun.service');
+const HistoryService = require('./history.service');
 const { Ammo, Gun } = require('../models');
 
 /**
@@ -7,25 +11,26 @@ const { Ammo, Gun } = require('../models');
 class DashboardService {
   static async data(userId) {
     try {
-      let ammo = await Ammo.findAll({
-        where: {
-          userId: {
-            [Op.eq]: userId,
-          },
-        },
-        order: [['purchaseDate', 'DESC']],
+      let inventories = await AmmoInventoryService.all(userId);
+      inventories = inventories ? inventories : [];
+      const ammoBreakdown = {};
+
+      inventories.forEach((inventory) => {
+        if (inventory.caliber in ammoBreakdown) {
+          ammoBreakdown[inventory.caliber] += inventory.count;
+        } else {
+          ammoBreakdown[inventory.caliber] = inventory.count;
+        }
       });
+
+      let ammo = await AmmoService.ammo(userId);
       ammo = ammo ? ammo : [];
 
-      let guns = await Gun.findAll({
-        where: {
-          userId: {
-            [Op.eq]: userId,
-          },
-        },
-        order: [['name', 'ASC']],
-      });
+      let guns = await GunService.guns(userId);
       guns = guns ? guns : [];
+
+      let rangeDays = await HistoryService.rangeDays(userId);
+      rangeDays = rangeDays ? rangeDays : [];
 
       const totalGunCost = guns.reduce(
         (accumulator, current) =>
@@ -44,18 +49,31 @@ class DashboardService {
       const shotgunCount = guns.filter((x) => x.type === 'Shotgun').length;
 
       return {
+        ammoBreakdown,
         gunCount: guns.length,
         rifleCount,
         pistolCount,
         shotgunCount,
-        ammoCount: ammo.length,
-        totalRoundCount: ammo.reduce(
+        ammoPurchasesCount: ammo.length,
+        totalRoundsPurchased: ammo.reduce(
           (accumulator, current) => accumulator + current.roundCount,
           0,
         ),
         totalGunCost,
         totalAmmoCost,
         totalInvestment: totalGunCost + totalAmmoCost,
+        totalAmmoUsed: rangeDays.reduce(
+          (accumulator, current) => accumulator + current.ammoUsedCount,
+          0,
+        ),
+        totalRoundsShot: rangeDays.reduce(
+          (accumulator, current) => accumulator + current.roundsShotCount,
+          0,
+        ),
+        totalAmmoInStock: inventories.reduce(
+          (accumulator, current) => accumulator + current.count,
+          0,
+        ),
       };
     } catch (error) {
       console.log(error);
