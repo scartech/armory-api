@@ -231,6 +231,9 @@ describe('PUT /api/guns/:id', () => {
       country: faker.name.findName(),
       estimatedValue: faker.finance.amount(),
       notes: faker.company.companyName(),
+      storageLocation: faker.random.alphaNumeric(10),
+      manufactureYear: faker.random.alphaNumeric(10),
+      nfaItem: true,
     };
 
     request(app)
@@ -262,6 +265,9 @@ describe('PUT /api/guns/:id', () => {
       estimatedValue: faker.finance.amount(),
       notes: faker.company.companyName(),
       rating: faker.datatype.number(5),
+      storageLocation: faker.random.alphaNumeric(10),
+      manufactureYear: faker.random.alphaNumeric(10),
+      nfaItem: true,
     };
 
     const res = await request(app)
@@ -286,6 +292,9 @@ describe('PUT /api/guns/:id', () => {
     expect(res.body.estimatedValue).toBe(values.estimatedValue);
     expect(res.body.notes).toBe(values.notes);
     expect(res.body.rating).toBe(values.rating);
+    expect(res.body.storageLocation).toBe(values.storageLocation);
+    expect(res.body.manufactureYear).toBe(values.manufactureYear);
+    expect(res.body.nfaItem).toBe(values.nfaItem);
   });
 });
 
@@ -313,6 +322,9 @@ describe('POST /api/guns/:id', () => {
       estimatedValue: faker.finance.amount(),
       notes: faker.company.companyName(),
       rating: faker.datatype.number(5),
+      storageLocation: faker.random.alphaNumeric(10),
+      manufactureYear: faker.random.alphaNumeric(10),
+      nfaItem: true,
     };
 
     request(app)

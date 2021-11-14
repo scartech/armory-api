@@ -31,6 +31,9 @@ class GunController {
       country,
       estimatedValue,
       notes,
+      storageLocation,
+      manufactureYear,
+      nfaItem,
     } = req.body;
 
     try {
@@ -53,6 +56,9 @@ class GunController {
         country,
         estimatedValue,
         notes,
+        storageLocation,
+        manufactureYear,
+        nfaItem,
       });
 
       if (gun) {
@@ -229,6 +235,9 @@ class GunController {
         country,
         estimatedValue,
         notes,
+        storageLocation,
+        manufactureYear,
+        nfaItem,
       } = req.body;
 
       const updatedGun = await GunService.update(id, {
@@ -250,6 +259,9 @@ class GunController {
         country,
         estimatedValue,
         notes,
+        storageLocation,
+        manufactureYear,
+        nfaItem,
       });
 
       if (updatedGun) {

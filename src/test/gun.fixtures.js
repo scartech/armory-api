@@ -21,6 +21,9 @@ class GunFixtures {
       estimatedValue: faker.finance.amount(),
       notes: faker.company.companyName(),
       rating: faker.datatype.number(5),
+      storageLocation: faker.random.alphaNumeric(10),
+      manufactureYear: faker.random.alphaNumeric(10),
+      nfaItem: false,
       userId: userId,
     });
   }

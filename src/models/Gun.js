@@ -17,6 +17,9 @@ const db = require('../config/db.config');
  * @property {number} purchasePrice - How much was paid for the gun - float
  * @property {string} purchaseDate - Purchase date - date
  * @property {string} ffl - Who was the FFL used when purchasing the gun
+ * @property {string} storageLocation - where is the gun stored
+ * @property {string} manufactureYear - what year or year range was the gun manufactured
+ * @property {boolean} nfaItem - is the gun an NFA item
  * @property {string} buyer - Who was the gun sold to
  * @property {number} salePrice - How much was the gun sold for - float
  * @property {string} saleDate - When was the gun sold - date
@@ -76,6 +79,15 @@ const Gun = db.define(
     },
     country: {
       type: DataTypes.STRING,
+    },
+    storageLocation: {
+      type: DataTypes.STRING,
+    },
+    manufactureYear: {
+      type: DataTypes.STRING,
+    },
+    nfaItem: {
+      type: DataTypes.BOOLEAN,
     },
     notes: {
       type: DataTypes.TEXT,
