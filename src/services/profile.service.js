@@ -82,6 +82,27 @@ class ProfileService {
   }
 
   /**
+   * Updates the TOTP enabled status for a given user.
+   *
+   * @param {integer} id
+   * @param {boolean} enabled
+   * @returns
+   */
+  static async enableTotp(id, enabled) {
+    try {
+      const user = await ProfileService.read(id);
+      if (!user) {
+        throw new Error('User does not exist.');
+      }
+      user.totpEnabled = enabled;
+
+      return await user.save({ fields: ['totpEnabled'] });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Updates the password for a given user.
    *
    * @param {integer} id
@@ -112,7 +133,7 @@ class ProfileService {
    */
   static async update(id, values) {
     try {
-      const { email, name, totpEnabled } = values;
+      const { email, name } = values;
       const user = await ProfileService.read(id);
 
       if (!user) {
@@ -121,10 +142,9 @@ class ProfileService {
 
       user.email = email;
       user.name = name;
-      user.totpEnabled = totpEnabled;
 
       return await user.save({
-        fields: ['email', 'name', 'totpEnabled'],
+        fields: ['email', 'name'],
       });
     } catch (error) {
       throw error;

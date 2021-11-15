@@ -115,6 +115,44 @@ class ProfileController {
   }
 
   /**
+   * Updates a user TOTP enabled setting.
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  static async enableTotp(req, res) {
+    const { id } = req.user;
+    const { totpEnabled } = req.body;
+
+    try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        let messages = [];
+        errors.errors.map((error) => {
+          messages.push(error.msg);
+        });
+        return res.status(400).json(new ClientMessage(true, messages));
+      }
+
+      const user = await User.findByPk(id);
+      if (!user) {
+        return res.status(404).json(new ClientMessage(true, ['Not found']));
+      }
+
+      const success = await ProfileService.enableTotp(id, totpEnabled);
+      if (success) {
+        res.status(200).send();
+      } else {
+        res.status(500).json(new ClientMessage(true, ['Update failed']));
+      }
+    } catch (error) {
+      res.status(500).json(new ClientMessage(true, [error.message]));
+    }
+  }
+
+  /**
    * Updates a user password.
    *
    * @param {*} req

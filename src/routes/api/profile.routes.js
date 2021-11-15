@@ -113,4 +113,26 @@ router.put(
   ProfileController.updatePassword,
 );
 
+/**
+ * PUT /api/profile/enableTotp
+ * @tags Profile
+ * @summary Updates a user's TOTP enabled flag
+ * @security BearerAuth
+ * @param {object} request.body.required - TOTP data
+ * @example request - Enable TOTP Payload
+ * {
+ *   "enableTotp": true
+ * }
+ * @return 200 - Success
+ * @return 401 - Invalid or missing JWT
+ * @return {ClientMessage} 400 - Invalid ID
+ * @return {ClientMessage} 404 - The user was not found
+ * @return {ClientMessage} 500 - A server error occurred
+ */
+router.put(
+  '/enabletotp',
+  [check('totpEnabled', 'enableTotp is required.').not().isEmpty().trim()],
+  ProfileController.enableTotp,
+);
+
 module.exports = router;
