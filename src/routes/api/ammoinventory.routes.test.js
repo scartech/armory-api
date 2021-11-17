@@ -25,7 +25,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createUserJWT();
           invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
 
           let promises = [];
@@ -46,6 +45,8 @@ beforeAll((done) => {
               .then((userData) => {
                 const inventoryPromises = [];
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
 
                 users.map((user) => {
                   for (let i = 0; i < 10; i++) {
@@ -87,16 +88,11 @@ describe('GET /api/inventory', () => {
     request(app).get('/api/inventory').expect(401, done);
   });
 
-  it('should return an empty array for non-existent user', async () => {
+  it('should return 500 for non-existent user', async () => {
     const res = await request(app)
       .get(`/api/inventory`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(0);
+      .expect(500);
   });
 
   it('should return 400 on invalid ID type', (done) => {
@@ -149,16 +145,11 @@ describe('GET /api/inventory/caliber/:caliber', () => {
     request(app).get('/api/inventory/caliber/9mm').expect(401, done);
   });
 
-  it('should return an empty array for non-existent user', async () => {
+  it('should return 500 for non-existent user', async () => {
     const res = await request(app)
       .get(`/api/inventory/caliber/9mm`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(0);
+      .expect(500);
   });
 
   it('should respond with empty array for a user with no inventory', async () => {
@@ -241,7 +232,7 @@ describe('DELETE /api/inventory/:id', () => {
     request(app).delete('/api/inventory/1').expect(401, done);
   });
 
-  it('should return 404 for non-existent user', (done) => {
+  it('should return 404 for non-existent inventory', (done) => {
     request(app)
       .delete('/api/inventory/999999')
       .set('Authorization', `Bearer ${jwtToken}`)

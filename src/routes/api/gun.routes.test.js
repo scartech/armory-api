@@ -23,7 +23,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createUserJWT();
           invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
 
           let promises = [];
@@ -44,6 +43,8 @@ beforeAll((done) => {
               .then((userData) => {
                 const gunPromises = [];
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
 
                 users.map((user) => {
                   for (let j = 0; j < 10; j++) {
@@ -85,16 +86,11 @@ describe('GET /api/guns', () => {
     request(app).get('/api/guns').expect(401, done);
   });
 
-  it('should return an empty array for non-existent user', async () => {
+  it('should return 500 for non-existent user', async () => {
     const res = await request(app)
       .get(`/api/guns`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(0);
+      .expect(500);
   });
 
   it('should return 400 on invalid ID type', (done) => {
@@ -148,7 +144,6 @@ describe('GET /api/guns/:id', () => {
     request(app)
       .get('/api/guns/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
@@ -156,7 +151,6 @@ describe('GET /api/guns/:id', () => {
     request(app)
       .get('/api/guns/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -179,7 +173,7 @@ describe('DELETE /api/guns/:id', () => {
     request(app).delete('/api/guns/1').expect(401, done);
   });
 
-  it('should return 404 for non-existent user', (done) => {
+  it('should return 404 for non-existent gun', (done) => {
     request(app)
       .delete('/api/guns/999999')
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -391,12 +385,7 @@ describe('GET /api/guns/caliber/:caliber', () => {
     const res = await request(app)
       .get('/api/guns/caliber/9mm')
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(0);
+      .expect(500);
   });
 
   it('should respond with empty array for a user with no guns', async () => {

@@ -17,12 +17,15 @@ class UserFixtures {
     });
   }
 
-  static createJWT() {
+  static createJWT(userId) {
     const user = {
-      id: 1,
+      id: userId ? userId : 1,
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'ADMIN',
+      totpEnabled: false,
+      totpValidated: false,
+      totpKey: faker.datatype.string(30),
     };
 
     return this.createJWTForUser(user);
@@ -34,6 +37,9 @@ class UserFixtures {
       email: faker.internet.email(),
       name: faker.name.findName(),
       role: 'USER',
+      totpEnabled: false,
+      totpValidated: false,
+      totpKey: faker.datatype.string(30),
     };
 
     return this.createJWTForUser(user);

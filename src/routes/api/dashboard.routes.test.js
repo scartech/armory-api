@@ -24,7 +24,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createUserJWT();
           invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
 
           let promises = [];
@@ -46,6 +45,8 @@ beforeAll((done) => {
               .then((userData) => {
                 const gunPromises = [];
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
 
                 users.map((user) => {
                   gunPromises.push(GunFixtures.createGun(user.id));
@@ -93,17 +94,11 @@ describe('GET /api/dashboard', () => {
     request(app).get('/api/dashboard').expect(401, done);
   });
 
-  it('should return with 0 values for non-existent user', async () => {
+  it('should return 500 for non-existent user', async () => {
     const res = await request(app)
       .get(`/api/dashboard`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(res.body.gunCount).toEqual(0);
-    expect(res.body.totalGunCost).toEqual(0);
-    expect(res.body.totalAmmoCost).toEqual(0);
+      .expect(500);
   });
 
   it('should respond with 0 values for a user with no guns', async () => {

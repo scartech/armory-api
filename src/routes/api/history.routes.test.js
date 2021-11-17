@@ -41,7 +41,6 @@ describe('GET /api/history/:id', () => {
     request(app)
       .get('/api/history/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
@@ -49,7 +48,6 @@ describe('GET /api/history/:id', () => {
     request(app)
       .get('/api/history/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -74,7 +72,6 @@ describe('GET /api/history/inventory/:id', () => {
     request(app)
       .get('/api/history/inventory/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
@@ -82,7 +79,6 @@ describe('GET /api/history/inventory/:id', () => {
     request(app)
       .get('/api/history/inventory/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -108,7 +104,6 @@ describe('GET /api/history/gun/:id', () => {
     request(app)
       .get('/api/history/gun/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
@@ -116,7 +111,6 @@ describe('GET /api/history/gun/:id', () => {
     request(app)
       .get('/api/history/gun/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -149,7 +143,6 @@ describe('DELETE /api/history/:id', () => {
     request(app)
       .delete('/api/history/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 

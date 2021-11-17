@@ -23,7 +23,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createUserJWT();
           invalidUserJwtToken = UserFixtures.createInvalidUserJWT();
 
           let promises = [];
@@ -44,6 +43,8 @@ beforeAll((done) => {
               .then((userData) => {
                 const ammoPromises = [];
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
 
                 users.map((user) => {
                   for (let i = 0; i < 10; i++) {
@@ -85,23 +86,17 @@ describe('GET /api/ammo', () => {
     request(app).get('/api/ammo').expect(401, done);
   });
 
-  it('should return an empty array for non-existent user', async () => {
+  it('should return 500 for non-existent user', async () => {
     const res = await request(app)
       .get(`/api/ammo`)
       .set('Authorization', `Bearer ${invalidUserJwtToken}`)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    expect(res.body).toBeDefined();
-    expect(Array.isArray(res.body)).toEqual(true);
-    expect(res.body.length).toEqual(0);
+      .expect(500);
   });
 
   it('should return 400 on invalid ID type', (done) => {
     request(app)
       .get('/api/ammo/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -148,7 +143,6 @@ describe('GET /api/ammo/:id', () => {
     request(app)
       .get('/api/ammo/888888')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(404, done);
   });
 
@@ -156,7 +150,6 @@ describe('GET /api/ammo/:id', () => {
     request(app)
       .get('/api/ammo/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 
@@ -179,7 +172,7 @@ describe('DELETE /api/ammo/:id', () => {
     request(app).delete('/api/ammo/1').expect(401, done);
   });
 
-  it('should return 404 for non-existent user', (done) => {
+  it('should return 404 for non-existent ammo', (done) => {
     request(app)
       .delete('/api/ammo/999999')
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -190,7 +183,6 @@ describe('DELETE /api/ammo/:id', () => {
     request(app)
       .delete('/api/ammo/abc')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .expect('Content-Type', /json/)
       .expect(400, done);
   });
 

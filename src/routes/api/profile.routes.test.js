@@ -22,8 +22,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createJWT();
-          jwtUserToken = UserFixtures.createUserJWT();
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
@@ -41,6 +39,11 @@ beforeAll((done) => {
             Promise.all(promises)
               .then((userData) => {
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
+                jwtUserToken = UserFixtures.createUserJWT(
+                  users[users.length - 1].id,
+                );
                 done();
               })
               .catch(() => done());
@@ -87,14 +90,13 @@ describe('GET /api/profile', () => {
     request(app).get('/api/profile').expect(401, done);
   });
 
-  it('should return 404 on non-existent user', (done) => {
+  it('should return 500 for non-existent user', (done) => {
     const invalidJwt = UserFixtures.createInvalidUserJWT();
 
     request(app)
       .get('/api/profile')
       .set('Authorization', `Bearer ${invalidJwt}`)
-      .expect('Content-Type', /json/)
-      .expect(404, done);
+      .expect(500, done);
   });
 
   it('should respond with user', async () => {
@@ -117,7 +119,7 @@ describe('PUT /api/profile', () => {
     request(app).put('/api/profile').expect(401, done);
   });
 
-  it('should return 404 on non-existent user', (done) => {
+  it('should return 500 on non-existent user', (done) => {
     const email = faker.internet.email();
     const name = faker.name.findName();
     const updateUser = { email, name };
@@ -127,8 +129,7 @@ describe('PUT /api/profile', () => {
       .put('/api/profile')
       .send(updateUser)
       .set('Authorization', `Bearer ${invalidJwt}`)
-      .expect('Content-Type', /json/)
-      .expect(404, done);
+      .expect(500, done);
   });
 
   it('should update user', async () => {
@@ -155,7 +156,7 @@ describe('PUT /api/profile/password', () => {
     request(app).put('/api/profilepassword').expect(401, done);
   });
 
-  it('should return 404 for non-existent user', (done) => {
+  it('should return 500 for non-existent user', (done) => {
     const password = faker.internet.password();
     const invalidJwt = UserFixtures.createInvalidUserJWT();
 
@@ -163,8 +164,7 @@ describe('PUT /api/profile/password', () => {
       .put('/api/profile/password')
       .send({ password })
       .set('Authorization', `Bearer ${invalidJwt}`)
-      .expect('Content-Type', /json/)
-      .expect(404, done);
+      .expect(500, done);
   });
 
   it('should fail with no password', (done) => {

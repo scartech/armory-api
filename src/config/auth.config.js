@@ -62,6 +62,19 @@ passport.use(
     },
     async (token, done) => {
       try {
+        const user = await User.findByPk(token.user.id);
+        if (!user) {
+          throw new Error('Invalid user');
+        }
+
+        if (
+          user.totpValidated &&
+          user.totpEnabled &&
+          !token.user.totpLoggedIn
+        ) {
+          throw new Error('TOTP not logged in');
+        }
+
         return done(null, token.user);
       } catch (error) {
         done(error);

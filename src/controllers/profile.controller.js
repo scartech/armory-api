@@ -69,7 +69,6 @@ class ProfileController {
         res.status(404).json(new ClientMessage(true, ['Not found']));
       }
     } catch (error) {
-      console.log('error', error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }

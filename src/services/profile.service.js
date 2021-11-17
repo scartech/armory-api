@@ -1,6 +1,6 @@
 const generator = require('generate-password');
 const notp = require('notp');
-const { User } = require('../models');
+const { User, AuthToken } = require('../models');
 
 /**
  * Service class for user profile self-service ops.
@@ -23,6 +23,13 @@ class ProfileService {
         length: 32,
       });
       user.totpValidated = false;
+
+      // Invalidate any Remember Me TOTP sessions
+      await AuthToken.destroy({
+        where: {
+          userId: user.id,
+        },
+      });
 
       return await user.save({ fields: ['totpKey', 'totpValidated'] });
     } catch (error) {

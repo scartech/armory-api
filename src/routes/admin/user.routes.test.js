@@ -22,8 +22,6 @@ beforeAll((done) => {
       // For tests, tear down the entire DB and rebuild
       DBConfig.sync({ force: true })
         .then(() => {
-          jwtToken = UserFixtures.createJWT();
-          jwtUserToken = UserFixtures.createUserJWT();
           let promises = [];
           try {
             for (let i = 0; i < NUM_USERS; i++) {
@@ -41,6 +39,11 @@ beforeAll((done) => {
             Promise.all(promises)
               .then((userData) => {
                 users = userData.map((x) => x.dataValues);
+
+                jwtToken = UserFixtures.createJWT(users[users.length - 1].id);
+                jwtUserToken = UserFixtures.createUserJWT(
+                  users[users.length - 1].id,
+                );
                 done();
               })
               .catch(() => done());
