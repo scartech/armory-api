@@ -45,9 +45,6 @@ const History = db.define(
 
         return total;
       },
-      set(value) {
-        throw new Error('Do not try setting the count value');
-      },
     },
     roundsShotCount: {
       type: DataTypes.VIRTUAL,
@@ -63,9 +60,6 @@ const History = db.define(
         }
 
         return total;
-      },
-      set(value) {
-        throw new Error('Do not try setting the count value');
       },
     },
   },

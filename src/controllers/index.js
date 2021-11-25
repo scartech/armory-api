@@ -7,4 +7,5 @@ module.exports = {
   AmmoController: require('./ammo.controller'),
   DashboardController: require('./dashboard.controller'),
   AmmoInventoryController: require('./ammoinventory.controller'),
+  AccessoryController: require('./accessory.controller'),
 };

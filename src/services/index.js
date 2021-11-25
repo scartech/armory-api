@@ -6,4 +6,5 @@ module.exports = {
   AmmoService: require('./ammo.service'),
   DashboardService: require('./dashboard.service'),
   AmmoInventoryService: require('./ammoinventory.service'),
+  AccessoryService: require('./accessory.service'),
 };
