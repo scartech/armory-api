@@ -30,6 +30,9 @@ const Accessory = db.define(
     manufacturer: {
       type: DataTypes.STRING,
     },
+    magazineCapacity: {
+      type: DataTypes.INTEGER,
+    },
     count: {
       type: DataTypes.INTEGER,
     },
@@ -46,6 +49,9 @@ const Accessory = db.define(
       type: DataTypes.STRING,
     },
     purchasePrice: {
+      type: DataTypes.FLOAT,
+    },
+    pricePerItem: {
       type: DataTypes.FLOAT,
     },
     purchaseDate: {

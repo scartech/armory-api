@@ -39,6 +39,8 @@ class AccessoryFixtures {
         purchasePrice: faker.datatype.number(),
         purchaseDate: faker.date.past(),
         manufactureYear: faker.random.alphaNumeric(10),
+        pricePerItem: faker.datatype.number(),
+        magazineCapacity: faker.datatype.number(),
       });
 
       for (let j = 0; j < count; j++) {

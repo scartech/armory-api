@@ -181,6 +181,8 @@ describe('PUT /api/accessory/:id', () => {
       purchasePrice: faker.datatype.number(),
       purchaseDate: faker.date.past(),
       manufactureYear: faker.random.alphaNumeric(10),
+      pricePerItem: faker.datatype.number(),
+      magazineCapacity: faker.datatype.number(),
       gunIds: accessories[0].guns.map((gun) => gun.id),
     };
 
@@ -208,6 +210,8 @@ describe('PUT /api/accessory/:id', () => {
       purchasePrice: faker.datatype.number(),
       purchaseDate: faker.date.past(),
       manufactureYear: faker.random.alphaNumeric(10),
+      pricePerItem: faker.datatype.number(),
+      magazineCapacity: faker.datatype.number(),
       gunIds: accessories[0].guns.map((gun) => gun.id),
     };
 
@@ -225,6 +229,8 @@ describe('PUT /api/accessory/:id', () => {
     expect(res.body.modelName).toBe(values.modelName);
     expect(res.body.manufacturer).toBe(values.manufacturer);
     expect(res.body.count).toBe(values.count);
+    expect(res.body.pricePerItem).toBe(values.pricePerItem);
+    expect(res.body.magazineCapacity).toBe(values.magazineCapacity);
     expect(res.body.country).toBe(values.country);
     expect(res.body.purchasedFrom).toBe(values.purchasedFrom);
     expect(res.body.purchasePrice).toBe(values.purchasePrice);
@@ -249,6 +255,8 @@ describe('PUT /api/accessory/:id', () => {
       purchasePrice: faker.datatype.number(),
       purchaseDate: faker.date.past(),
       manufactureYear: faker.random.alphaNumeric(10),
+      pricePerItem: faker.datatype.number(),
+      magazineCapacity: faker.datatype.number(),
       gunIds: accessory.guns.map((gun) => gun.id),
     };
 
@@ -282,6 +290,8 @@ describe('PUT /api/accessory/:id', () => {
       purchasePrice: faker.datatype.number(),
       purchaseDate: faker.date.past(),
       manufactureYear: faker.random.alphaNumeric(10),
+      pricePerItem: faker.datatype.number(),
+      magazineCapacity: faker.datatype.number(),
       gunIds: accessory.guns.map((gun) => gun.id),
     };
 
@@ -318,6 +328,8 @@ describe('POST /api/accessory/', () => {
       purchasePrice: faker.datatype.number(),
       purchaseDate: faker.date.past(),
       manufactureYear: faker.random.alphaNumeric(10),
+      pricePerItem: faker.datatype.number(),
+      magazineCapacity: faker.datatype.number(),
       gunIds: accessories[0].guns.map((gun) => gun.id),
     };
 
@@ -335,6 +347,8 @@ describe('POST /api/accessory/', () => {
     expect(res.body.modelName).toBe(values.modelName);
     expect(res.body.manufacturer).toBe(values.manufacturer);
     expect(res.body.count).toBe(values.count);
+    expect(res.body.pricePerItem).toBe(values.pricePerItem);
+    expect(res.body.magazineCapacity).toBe(values.magazineCapacity);
     expect(res.body.country).toBe(values.country);
     expect(res.body.purchasedFrom).toBe(values.purchasedFrom);
     expect(res.body.purchasePrice).toBe(values.purchasePrice);

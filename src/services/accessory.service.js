@@ -75,6 +75,8 @@ class AccessoryService {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
         gunIds,
       } = values;
 
@@ -91,6 +93,8 @@ class AccessoryService {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
         userId,
       });
 
@@ -148,6 +152,8 @@ class AccessoryService {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
         gunIds,
       } = values;
 
@@ -164,6 +170,8 @@ class AccessoryService {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
       });
 
       if (!updated) {

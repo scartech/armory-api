@@ -67,6 +67,8 @@ class AccessoryController {
       purchasePrice,
       purchaseDate,
       manufactureYear,
+      pricePerItem,
+      magazineCapacity,
       gunIds,
     } = req.body;
 
@@ -84,6 +86,8 @@ class AccessoryController {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
         gunIds,
       });
 
@@ -119,6 +123,8 @@ class AccessoryController {
       purchasePrice,
       purchaseDate,
       manufactureYear,
+      pricePerItem,
+      magazineCapacity,
       gunIds,
     } = req.body;
 
@@ -147,6 +153,8 @@ class AccessoryController {
         purchasePrice,
         purchaseDate,
         manufactureYear,
+        pricePerItem,
+        magazineCapacity,
         gunIds,
       });
 
@@ -156,7 +164,6 @@ class AccessoryController {
         res.status(500).json(new ClientMessage(true, ['Update failed']));
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json(new ClientMessage(true, [error.message]));
     }
   }
