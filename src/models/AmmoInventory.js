@@ -8,7 +8,6 @@ const db = require('../config/db.config');
  * @property {string} caliber - The ammo's caliber
  * @property {string} brand - The brand of ammo
  * @property {integer} count - Number of the item on hand
- * @property {integer} goal - Target number for an item
  * @property {integer} userId.required - ID of the user that owns the ammo
  */
 const AmmoInventory = db.define(
@@ -88,9 +87,6 @@ const AmmoInventory = db.define(
       set(value) {
         throw new Error('Do not try setting the count value');
       },
-    },
-    goal: {
-      type: DataTypes.INTEGER,
     },
   },
   {

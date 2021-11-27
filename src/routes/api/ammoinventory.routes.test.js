@@ -269,7 +269,6 @@ describe('DELETE /api/inventory/:id', () => {
     const inventory = await AmmoInventory.create({
       caliber,
       brand,
-      goal: faker.datatype.number(),
       name,
       userId: inventories[0].userId,
     });
@@ -311,7 +310,6 @@ describe('PUT /api/inventory/:id', () => {
     const values = {
       brand: faker.hacker.verb(),
       caliber: faker.company.bsBuzz(),
-      goal: faker.datatype.number(),
       name: faker.hacker.verb(),
     };
 
@@ -332,7 +330,6 @@ describe('PUT /api/inventory/:id', () => {
     const values = {
       brand: faker.hacker.verb(),
       caliber: faker.company.bsBuzz(),
-      goal: faker.datatype.number(),
       name: faker.hacker.verb(),
     };
 
@@ -349,7 +346,6 @@ describe('PUT /api/inventory/:id', () => {
     expect(res.body.caliber).toBe(values.caliber);
     expect(res.body.brand).toBe(values.brand);
     expect(res.body.name).toBe(values.name);
-    expect(res.body.goal).toBe(values.goal);
   });
 });
 
@@ -363,7 +359,6 @@ describe('POST /api/inventory/:id', () => {
       brand: faker.hacker.verb(),
       name: faker.hacker.verb(),
       caliber: faker.company.bsBuzz(),
-      goal: faker.datatype.number(),
     };
 
     request(app)

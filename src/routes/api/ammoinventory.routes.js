@@ -15,7 +15,6 @@ const router = express.Router();
  *   "id": 0,
  *   "caliber": "9mm",
  *   "count": 250,
- *   "goal": 1000,
  *   "userId": 1
  * }
  * @return 401 - Invalid or missing JWT
@@ -50,7 +49,6 @@ router.delete('/:id', AmmoInventoryController.delete);
  * {
  *   "id": 0,
  *   "caliber": "9mm",
- *   "goal": 1000,
  *   "userId": 1
  * }
  * @return {object} 200 - Updated existing inventory
@@ -59,7 +57,6 @@ router.delete('/:id', AmmoInventoryController.delete);
  *   "id": 0,
  *   "caliber": "9mm",
  *   "count": 250,
- *   "goal": 1000,
  *   "userId": 1
  * }
  * @return 401 - Invalid or missing JWT
@@ -79,7 +76,6 @@ router.put('/:id', AmmoInventoryController.update);
  * {
  *   "id": 0,
  *   "caliber": "9mm",
- *   "goal": 1000,
  *   "userId": 1
  * }
  * @return {object} 201 - Created new inventory
@@ -88,7 +84,6 @@ router.put('/:id', AmmoInventoryController.update);
  *   "id": 0,
  *   "caliber": "9mm",
  *   "count": 250,
- *   "goal": 1000,
  *   "userId": 1
  * }
  * @return 401 - Invalid or missing JWT
@@ -107,7 +102,6 @@ router.post('/', AmmoInventoryController.create);
  *   "id": 0,
  *   "caliber": "9mm",
  *   "count": 250,
- *   "goal": 1000,
  *   "userId": 1
  * }]
  * @return 401 - Invalid or missing JWT
@@ -126,7 +120,6 @@ router.get('/', AmmoInventoryController.all);
  *   "id": 0,
  *   "caliber": "9mm",
  *   "count": 250,
- *   "goal": 1000,
  *   "userId": 1
  * }]
  * @return 401 - Invalid or missing JWT

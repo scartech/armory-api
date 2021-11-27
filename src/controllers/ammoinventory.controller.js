@@ -12,14 +12,13 @@ class AmmoInventoryController {
    * @param {*} res
    */
   static async create(req, res) {
-    const { caliber, brand, name, goal } = req.body;
+    const { caliber, brand, name } = req.body;
 
     try {
       const inventory = await AmmoInventoryService.create(req.user.id, {
         brand,
         name,
         caliber,
-        goal,
       });
 
       if (inventory) {
@@ -92,13 +91,12 @@ class AmmoInventoryController {
         return res.status(401).send();
       }
 
-      const { caliber, brand, name, goal } = req.body;
+      const { caliber, brand, name } = req.body;
 
       const updatedInventory = await AmmoInventoryService.update(id, {
         caliber,
         brand,
         name,
-        goal,
       });
 
       if (updatedInventory) {

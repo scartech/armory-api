@@ -14,13 +14,12 @@ class AmmoInventoryService {
    */
   static async create(userId, values) {
     try {
-      const { caliber, brand, name, goal } = values;
+      const { caliber, brand, name } = values;
 
       return await AmmoInventory.create({
         caliber,
         brand,
         name,
-        goal,
         userId: userId,
       });
     } catch (error) {
@@ -157,35 +156,6 @@ class AmmoInventoryService {
   }
 
   /**
-   * Updates the goal for a single inventory item
-   *
-   * @param {integer} id
-   * @param {object} goal
-   * @returns
-   */
-  static async updateGoal(id, goal) {
-    try {
-      const inventory = await AmmoInventory.findByPk(id);
-      if (!inventory) {
-        throw new Error('Inventory not found.');
-      }
-
-      const goalNum = parseInt(goal);
-      if (isNaN(goalNum)) {
-        throw new Error('Invalid goal value.');
-      }
-
-      await inventory.update({
-        goal,
-      });
-
-      return AmmoInventoryService.read(id);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
    * Updates a single inventory item
    *
    * @param {integer} id
@@ -199,13 +169,12 @@ class AmmoInventoryService {
         throw new Error('Inventory not found.');
       }
 
-      const { caliber, brand, name, goal } = values;
+      const { caliber, brand, name } = values;
 
       await inventory.update({
         caliber,
         brand,
         name,
-        goal,
       });
 
       return AmmoInventoryService.read(id);
